@@ -6,7 +6,6 @@
 **BSCS-F2 (Group C)**
 
 </div>
-<br>
 
 ## Group Members
 * **Ecarma, Kirsten Van B.**
