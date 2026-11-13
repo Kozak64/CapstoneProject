@@ -22,3 +22,7 @@ The **Gym Membership System** is a Java-based desktop application featuring a Gr
 Through this application, gym members can register for membership plans, book training sessions, and process payments, while trainers can manage their schedules and track attendance. Administrators have full oversight to manage users, membership plans, and financial reports.
 
 ---
+
+##  Code Breakdown & OOP Principles Used
+
+Our system architecture is designed around the four core pillars of Object-Oriented Programming (OOP), supplemented by robust error handling, persistent file storage, and interactive GUI components.
