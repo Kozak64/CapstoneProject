@@ -25,3 +25,18 @@ Through this application, gym members can register for membership plans, book tr
 ##  Code Breakdown & OOP Principles Used
 
 Our system is designed around the four core pillars of Object-Oriented Programming (OOP), supplemented by error handling, file handling, and interactive GUI components.
+
+
+### 1. The Four Pillars of OOP
+
+* **Abstraction (Abstract Classes & Interfaces)**
+
+
+* **Inheritance**
+
+
+* **Encapsulation**
+ 
+
+* **Polymorphism**
+
