@@ -1,7 +1,7 @@
-public class ADMIN {
+public class Admin {
     private int adminID;
 
-    public ADMIN(int adminID) {
+    public Admin(int adminID) {
         this.adminID = adminID;
     }
 
