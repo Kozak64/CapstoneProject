@@ -1,16 +1,4 @@
-asdasdasd
-@James Zarate;
-make admin class;
-make trainer class;
-make membership class;
-
-@Neil Allen Abanes Villarba;
-make paymetn class;
-make session class;
-
-@Khian Gabito
-
-make abstract user;
-make interface paymentprocess;
-make member class;
-@Kirsten Van Ecarma himo ug readme✌️;
+# Gym Membership System
+**Cebu Institute of Technology - University**  
+**CSIT227 – Object-Oriented Programming | Capstone Project**  
+**Section/Group:** BSCS-F2 (Group C)
