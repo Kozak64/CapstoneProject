@@ -40,3 +40,22 @@ Our system is designed around the four core pillars of Object-Oriented Programmi
 
 * **Polymorphism**
 
+<br>
+
+### 2. Core System Classes & Relationships
+
+<br>
+
+### 3. Additional Technical Implementation
+
+* **Exception Handling**
+
+* **File Handling**
+
+* **Graphical User Interface (GUI)**
+
+
+<br>
+
+## Design Patterns
+
