@@ -1,4 +1,4 @@
-package loginform;
+package ui.loginform;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
