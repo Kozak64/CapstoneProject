@@ -38,7 +38,7 @@ public abstract class User{
         return this.email.equals(email) && this.password.equals(password);
     }
 
-    public boolean logout(){
-        return true;
+    public void logout(){
+        System.out.println(name + " logged out.");
     }
 }
