@@ -1,4 +1,4 @@
-package LoginForm;
+package loginform;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -19,7 +19,7 @@ public class LoginForm extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
-        setSize(500,500);
+        setSize(800,600);
     loginButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -33,10 +33,8 @@ public class LoginForm extends JFrame{
         }
     });
 }
-    static void main(){
-        SwingUtilities.invokeLater(()->{
-            new LoginForm().setVisible(true);
-        });
+    public static void main(String[] args){
+        SwingUtilities.invokeLater(()->new LoginForm().setVisible(true));
     }
 
 }
