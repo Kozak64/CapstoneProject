@@ -5,7 +5,7 @@ public class Trainer extends User{
     private String specialization;
     private String schedule;
 
-    public Trainer(int userId, String name, String email, String password,int trainerID, String specialization, String schedule) {
+    public Trainer(String userId, String name, String email, String password, int trainerID, String specialization, String schedule) {
         super(userId, name, email, password, "Trainer");
         this.trainerID = trainerID;
         this.specialization = specialization;

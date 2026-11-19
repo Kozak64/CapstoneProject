@@ -1,22 +1,22 @@
 package models;
 
 public abstract class User{
-    private int userID;
+    private String userID;
     private String name;
     private String email;
     private String password;
     private String role;
 
 
-    public User(int userID, String name, String email, String password, String role){
-        this.userID = userID;
-        this.name = name;
-        this.email = email;
-        this.password = password;
+    public User(String userID, String name, String email, String password, String role){
+        setUserID(userID);
+        setName(name);
+        setEmail(email);
+        setPassword(password);
         this.role = role;
     }
 
-    public int getUserID(){
+    public String getUserID(){
         return userID;
     }
 
@@ -37,6 +37,12 @@ public abstract class User{
     }
 
 
+    public void setUserID(String userID) {
+        if (userID == null || !userID.trim().matches("\\d{2}-\\d{4}-\\d{3}")) {
+            throw new IllegalArgumentException("User ID must follow the format XX-XXXX-XXX (e.g., 25-1824-135).");
+        }
+        this.userID = userID.trim();
+    }
 
     public void setName(String name){
         if(name == null || name.trim().isEmpty()){
@@ -60,8 +66,8 @@ public abstract class User{
 
 
 
-    public boolean login(String email, String password){
-        return this.email.equals(email) && this.password.equals(password);
+    public boolean login(String userID, String password) {
+        return this.userID.equals(userID) && this.password.equals(password);
     }
 
     public void logout(){

@@ -12,7 +12,7 @@ public class Member extends User{
     private String status;
     private List<Session> bookedSessions;
 
-    public Member(int userId, String name, String email, String password, int membershipNumber, MembershipPlan membershipPlan, LocalDate joinDate, String status){
+    public Member(String userId, String name, String email, String password, int membershipNumber, MembershipPlan membershipPlan, LocalDate joinDate, String status){
         super(userId, name, email, password, "Member");
         this.membershipNumber = membershipNumber;
         this.membershipPlan = membershipPlan;

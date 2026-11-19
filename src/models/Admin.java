@@ -3,7 +3,7 @@ package models;
 public class Admin extends User {
     private int adminID;
 
-    public Admin(int userId, String name, String email, String password,int adminID) {
+    public Admin(String userId, String name, String email, String password,int adminID) {
         super(userId,name,email,password,"Admin");
         this.adminID = adminID;
     }
