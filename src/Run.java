@@ -1,5 +1,5 @@
 
-import ui.loginform.LoginForm;
+import ui.LoginForm;
 import javax.swing.SwingUtilities;
 
 //DO NOT EDIT

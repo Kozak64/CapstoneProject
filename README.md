@@ -16,7 +16,7 @@
 <br>
 
 ## Project Overview
-The **Gym Membership System** is a Java-based desktop application featuring a Graphical User Interface (GUI) built to automate and streamline gym operations. The system facilitates seamless interaction between three distinct user roles: **Members**, **Trainers**, and **Admins**. 
+The **Gym Membership System** is a Java-based desktop application featuring a Graphical models.User Interface (GUI) built to automate and streamline gym operations. The system facilitates seamless interaction between three distinct user roles: **Members**, **Trainers**, and **Admins**. 
 
 Through this application, gym members can register for membership plans, book training sessions, and process payments, while trainers can manage their schedules and track attendance. Administrators have full oversight to manage users, membership plans, and financial reports.
 <br>
@@ -52,7 +52,7 @@ Our system is designed around the four core pillars of Object-Oriented Programmi
 
 * **File Handling**
 
-* **Graphical User Interface (GUI)**
+* **Graphical models.User Interface (GUI)**
 
 
 <br>
