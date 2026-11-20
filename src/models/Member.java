@@ -35,11 +35,6 @@ public class Member extends User{
         return joinDate;
     }
 
-
-    public void setMembershipPlan(MembershipPlan membershipPlan){
-        this.membershipPlan = membershipPlan;
-    }
-
     public LocalDate getExpiryDate(){
         return expiryDate;
     }
@@ -48,13 +43,26 @@ public class Member extends User{
         return status;
     }
 
-    public void setStatus(String status){
-        this.status = status;
-    }
-
     public List<Session> getBookedSessions(){
         return bookedSessions;
     }
+
+
+
+
+
+    public void setMembershipPlan(MembershipPlan membershipPlan){
+        this.membershipPlan = membershipPlan;
+    }
+
+    public void setStatus(String status){
+        this.status = status;
+    }
+    public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate;}
+
+
+
+
 
     public void bookSession(Session session) {
         if (!"Active".equalsIgnoreCase(status)) {
