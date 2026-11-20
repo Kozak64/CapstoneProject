@@ -42,10 +42,10 @@ public class LoginForm extends JFrame {
 
         loginButton.addActionListener(e -> handleLogin());
 
-//        registerButton.addActionListener(e -> {
-//            new RegisterForm().setVisible(true);
-//            dispose();
-//        });
+        registerButton.addActionListener(e -> {
+            new RegisterForm().setVisible(true);
+            dispose();
+        });
     }
 
     private void applyTheme(){
@@ -98,7 +98,7 @@ public class LoginForm extends JFrame {
         btn.setBorderPainted(bordered);
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
-    private void loadDummyUsers() {
+    private void loadDummyUsers() { //temporary for demo sake
         MembershipPlan goldPlan = new MembershipPlan(1, "Gold", 1500.0, 1, "Full gym + classes");
         users.add(new Admin("25-1824-135", "System Admin", "admin@gym.com", "admin123", 101));
         users.add(new Trainer("25-1231-123", "Coach Alex", "trainer@gym.com", "train123", 201, "Strength", "MWF 8AM-5PM"));
