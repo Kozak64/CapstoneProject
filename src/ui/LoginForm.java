@@ -139,8 +139,8 @@ public class LoginForm extends JFrame {
         }
 
         // Open the dashboard matching the User subclass
-        if (matchedUser instanceof Member member) {
-            new MemberDashboard(member).setVisible(true);
+      //  if (matchedUser instanceof Member member) {
+      //      new MemberDashboard(member).setVisible(true);
 //        } else if (matchedUser instanceof Trainer trainer) {
 //            new TrainerDashboard(trainer).setVisible(true);
 //        } else if (matchedUser instanceof Admin admin) {
