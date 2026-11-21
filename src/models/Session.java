@@ -32,6 +32,8 @@ public class Session {
     public int getMaxCapacity() { return maxCapacity; }
     public String getStatus() { return status; }
 
+    public void setStatus(String status) { this.status = status; }
+
     public void book(Member member) {
         if ("Cancelled".equalsIgnoreCase(status)) {
             throw new IllegalStateException("Cannot book a cancelled session.");

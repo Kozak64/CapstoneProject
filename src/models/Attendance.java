@@ -23,6 +23,8 @@ public class Attendance {
     public LocalDateTime getCheckInTime() { return checkInTime; }
     public boolean isPresent() { return present; }
 
+    public void setCheckInTime(LocalDateTime checkInTime) { this.checkInTime = checkInTime; }
+
     public void setPresent(boolean present) {
         this.present = present;
     }

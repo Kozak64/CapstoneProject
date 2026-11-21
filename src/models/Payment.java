@@ -30,6 +30,9 @@ public class Payment implements PaymentProcess {
     public String getMethod() { return method; }
     public String getStatus() { return status; }
 
+    public void setPaymentDate(LocalDate paymentDate) { this.paymentDate = paymentDate; }
+    public void setStatus(String status) { this.status = status; }
+
     public void setAmount(double amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Payment amount must be greater than 0.");
