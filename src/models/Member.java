@@ -18,7 +18,8 @@ public class Member extends User{
         this.membershipPlan = membershipPlan;
         this.joinDate = joinDate;
         this.expiryDate = (membershipPlan != null)
-                ? joinDate.plusMonths(membershipPlan.getDurationMonths()):joinDate;
+                ? joinDate.plusMonths(membershipPlan.getDurationMonths())
+                : null;
         this.status = status;
         this.bookedSessions = new ArrayList<>();
     }

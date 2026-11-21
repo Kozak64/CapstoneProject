@@ -1,12 +1,10 @@
 package ui;
 
 import models.Member;
+import models.*;
 import javax.swing.*;
-import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.util.Locale;
 
 public class MemberDashboard extends JFrame {
     private JPanel mainPanel;
@@ -30,7 +28,7 @@ public class MemberDashboard extends JFrame {
 
     private JButton btnLogout;
 
-    private Member currentMember;
+    private final Member currentMember;
 
     public MemberDashboard(Member member) {
         this.currentMember = member;
@@ -148,14 +146,61 @@ public class MemberDashboard extends JFrame {
         cmbPlans.addActionListener(e -> updatePriceDisplay());
 
         btnBookSession.addActionListener(e -> {
-            int row = tblSessions.getSelectedRow();
-            if (row == -1) {
-                JOptionPane.showMessageDialog(this, "Please select a session from the table first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+
+            if (currentMember.getMembershipPlan() == null) {
+                JOptionPane.showMessageDialog(
+                        this,"Please subscribe to a membership plan first.","Membership Required",
+                        JOptionPane.WARNING_MESSAGE
+                );
                 return;
             }
+
+            if (!"Active".equalsIgnoreCase(currentMember.getStatus())) {
+                JOptionPane.showMessageDialog(
+                        this,"Your membership is not active.\n\n" + "Please renew or activate your membership before booking sessions.","Inactive Membership",
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+
+            if (currentMember.getExpiryDate() == null ||
+                    currentMember.getExpiryDate().isBefore(java.time.LocalDate.now())) {
+
+                JOptionPane.showMessageDialog(
+                        this,"Your membership has expired.\n\n" + "Please renew your membership to book sessions.","Expired Membership",
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+
+            int row = tblSessions.getSelectedRow();
+
+            if (row == -1) {
+                JOptionPane.showMessageDialog(
+                        this,"Please select a session from the table first.","Selection Required",JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+
+            String status = tblSessions.getValueAt(row, 4).toString();
+
+            if ("Booked".equalsIgnoreCase(status)) {
+                JOptionPane.showMessageDialog(
+                        this,"This session is already booked.","Already Booked",JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+
             String sessionId = tblSessions.getValueAt(row, 0).toString();
+
             tblSessions.setValueAt("Booked", row, 4);
-            JOptionPane.showMessageDialog(this, "Session " + sessionId + " booked successfully!", "Booking Confirmed", JOptionPane.INFORMATION_MESSAGE);
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Session " + sessionId + " booked successfully!",
+                    "Booking Confirmed",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
         });
 
         btnCancelSession.addActionListener(e -> {
@@ -167,9 +212,7 @@ public class MemberDashboard extends JFrame {
             String sessionId = tblSessions.getValueAt(row, 0).toString();
             int confirm = JOptionPane.showConfirmDialog(
                     this,
-                    "Are you sure you want to cancel session " + sessionId + "?",
-                    "Confirm Cancel Session",
-                    JOptionPane.YES_NO_OPTION
+                    "Are you sure you want to cancel session " + sessionId + "?","Confirm Cancel Session",JOptionPane.YES_NO_OPTION
             );
             if (confirm == JOptionPane.YES_OPTION) {
                 tblSessions.setValueAt("Available", row, 4);
@@ -178,24 +221,75 @@ public class MemberDashboard extends JFrame {
         });
 
         btnRenewPay.addActionListener(e -> {
-            String selectedPlan = (String) cmbPlans.getSelectedItem();
-            String method = (String) cmbPaymentMethod.getSelectedItem();
-            String amountText = lblPlanPrice.getText();
+                if (currentMember == null) {
+                    JOptionPane.showMessageDialog(
+                            this, "No member account is currently loaded.", "Error",JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Payment Receipt\nPlan: " + selectedPlan + "\n" + amountText + "\nMethod: " + method + "\nStatus: Paid",
-                    "Membership Renewed",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-        });
+                int selectedIndex = cmbPlans.getSelectedIndex();
+                String method = (String) cmbPaymentMethod.getSelectedItem();
+
+                if (selectedIndex == -1 || method == null) {
+                    JOptionPane.showMessageDialog(
+                            this, "Please select a membership plan and payment method.", "Selection Required",JOptionPane.WARNING_MESSAGE
+                    );
+                    return;
+                }
+
+                MembershipPlan selectedPlan;
+
+                if (selectedIndex == 0) {
+                    selectedPlan = new MembershipPlan(
+                            1, "Monthly Basic", 1200.00, 1, "Basic gym membership"
+                    );
+                } else if (selectedIndex == 1) {
+                    selectedPlan = new MembershipPlan(
+                            2, "Quarterly Pro", 3200.00, 3, "Quarterly gym membership"
+                    );
+                } else {
+                    selectedPlan = new MembershipPlan(
+                            3, "Annual Elite", 11000.00, 12, "Annual gym membership"
+                    );
+                }
+
+                int confirm = JOptionPane.showConfirmDialog(
+                        this,
+                        "Confirm Membership Payment?\n\n" + "Plan: " + selectedPlan.getPlanName() + "\n" +"Price: PHP " + String.format("%.2f", selectedPlan.getPrice()) + "\n" +"Duration: " + selectedPlan.getDurationMonths() + " month(s)\n" +"Payment Method: " + method, "Confirm Payment",JOptionPane.YES_NO_OPTION
+                );
+
+                if (confirm != JOptionPane.YES_OPTION) {
+                    return;
+                }
+
+                try {
+                    Payment payment = new Payment(
+                            1,
+                            currentMember,
+                            selectedPlan,
+                            selectedPlan.getPrice(),
+                            method
+                    );
+
+                    payment.processPayment();
+                    populateMemberHeader();
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "PAYMENT RECEIPT\n\n" + "Member: " + currentMember.getName() + "\n" + "Plan: " + selectedPlan.getPlanName() + "\n" + "Amount: PHP " + String.format("%.2f", payment.getAmount()) + "\n" + "Duration: " + selectedPlan.getDurationMonths() + " month(s)\n" + "Payment Method: " + payment.getMethod() + "\n" + "Payment Date: " + payment.getPaymentDate() + "\n" + "Expiry Date: " + currentMember.getExpiryDate() + "\n" + "Status: " + currentMember.getStatus(), "Payment Successful", JOptionPane.INFORMATION_MESSAGE
+                    );
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(
+                            this, "Payment failed: " + ex.getMessage(), "Payment Error", JOptionPane.ERROR_MESSAGE
+                    );
+                }
+            });
 
         btnLogout.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(
-                    this,
-                    "Are you sure you want to logout?",
-                    "Confirm Logout",
-                    JOptionPane.YES_NO_OPTION
+                    this, "Are you sure you want to logout?", "Confirm Logout", JOptionPane.YES_NO_OPTION
             );
             if (confirm == JOptionPane.YES_OPTION) {
                 dispose();

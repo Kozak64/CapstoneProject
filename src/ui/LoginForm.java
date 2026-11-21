@@ -2,19 +2,10 @@
 package ui;
 
 import models.*;
-
-
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.plaf.FontUIResource;
-import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import services.GymSystemManager;
+import exceptions.InvalidLoginException;
 
 public class LoginForm extends JFrame {
     private JTextField textField1;
@@ -28,8 +19,8 @@ public class LoginForm extends JFrame {
     private JLabel titleLabel;
     private JLabel subtitleLabel;
 
-    // Temporary test users until service/GymSystemManager is created
-    private final List<User> users = new ArrayList<>();
+    private final GymSystemManager manager =
+            GymSystemManager.getInstance();
 
     public LoginForm() {
         setTitle("Gym Membership System - Sign In");
@@ -41,7 +32,6 @@ public class LoginForm extends JFrame {
         getRootPane().setDefaultButton(loginButton);
 
         applyTheme();
-        loadDummyUsers();
 
         loginButton.addActionListener(e -> handleLogin());
 
@@ -68,16 +58,10 @@ public class LoginForm extends JFrame {
         UITheme.styleSecondaryButton(registerButton);
     }
 
-    private void loadDummyUsers() { //temporary for demo sake
-        MembershipPlan goldPlan = new MembershipPlan(1, "Gold", 1500.0, 1, "Full gym + classes");
-        users.add(new Admin("25-1824-135", "System Admin", "admin@gym.com", "admin123", 101));
-        users.add(new Trainer("25-1231-123", "Coach Alex", "trainer@gym.com", "train123", 201, "Strength", "MWF 8AM-5PM"));
-        users.add(new Member("25-1234-567", "Juan Dela Cruz", "member@gym.com", "mem123", 1001, goldPlan, LocalDate.now(), "Active"));
-    }
-
     private void handleLogin() {
         String userID = textField1.getText().trim();
         String password = new String(passwordField1.getPassword());
+
         if (userID.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this,
                     "Please enter both User ID and password.",
@@ -85,39 +69,38 @@ public class LoginForm extends JFrame {
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
+
         if (!userID.matches("\\d{2}-\\d{4}-\\d{3}")) {
             JOptionPane.showMessageDialog(this,
-                    "Invalid User ID format. Use XX-XXXX-XXX (e.g., 25-1824-135).",
+                    "Invalid User ID format. Use XX-XXXX-XXX.",
                     "Invalid Format",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        User matchedUser = null;
-        for (User u : users) {
-            if (u.login(userID, password)) {
-                matchedUser = u;
-                break;
+
+        try {
+            User matchedUser = manager.authenticate(userID, password);
+
+            if (matchedUser instanceof Member member) {
+                new MemberDashboard(member).setVisible(true);
+            } else if (matchedUser instanceof Trainer trainer) {
+                new TrainerDashboard(trainer).setVisible(true);
+            } else if (matchedUser instanceof Admin admin) {
+                new AdminDashboard(admin).setVisible(true);
             }
-        }
-        if (matchedUser == null) {
+
+            dispose();
+
+        } catch (InvalidLoginException ex) {
             JOptionPane.showMessageDialog(this,
-                    "Invalid User ID or password.",
+                    ex.getMessage(),
                     "Login Failed",
                     JOptionPane.ERROR_MESSAGE);
-            passwordField1.setText("");
-            return;
-        }
 
-        // Open the dashboard matching the User subclass
-        if (matchedUser instanceof Member member) {
-            new MemberDashboard(member).setVisible(true);
-        } else if (matchedUser instanceof Trainer trainer) {
-            new TrainerDashboard(trainer).setVisible(true);
-        } else if (matchedUser instanceof Admin admin) {
-            new AdminDashboard(admin).setVisible(true);
+            passwordField1.setText("");
         }
-        dispose();
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new LoginForm().setVisible(true));
