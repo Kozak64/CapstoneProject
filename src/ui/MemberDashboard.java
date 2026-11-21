@@ -1,12 +1,18 @@
 package ui;
 
-import models.Member;
 import models.*;
+import services.GymSystemManager;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MemberDashboard extends JFrame {
+    private static final DateTimeFormatter DATE_TIME_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     private JPanel mainPanel;
     private JLabel lblDashboardTitle;
     private JLabel lblPlanInfo;
@@ -29,6 +35,12 @@ public class MemberDashboard extends JFrame {
     private JButton btnLogout;
 
     private final Member currentMember;
+    private final GymSystemManager manager = GymSystemManager.getInstance();
+
+    private DefaultTableModel sessionModel;
+    private DefaultTableModel attendanceModel;
+    private List<Session> displayedSessions = new ArrayList<>();
+    private List<MembershipPlan> availablePlans = new ArrayList<>();
 
     public MemberDashboard(Member member) {
         this.currentMember = member;
@@ -43,6 +55,7 @@ public class MemberDashboard extends JFrame {
         populateMemberHeader();
         setupTablesAndCombos();
         setupListeners();
+        refreshAll();
     }
 
     private void applyTheme() {
@@ -95,12 +108,12 @@ public class MemberDashboard extends JFrame {
             lblPlanInfo.setText("Current Plan: " + planName + "   |   Expiry Date: " + expiryText + "   |   Status: " + currentMember.getStatus());
         } else {
             lblDashboardTitle.setText("Member Portal - Guest Member");
-            lblPlanInfo.setText("Current Plan: Monthly Basic   |   Expiry Date: 2026-12-20   |   Status: Active");
+            lblPlanInfo.setText("Preview Mode");
         }
     }
 
     private void setupTablesAndCombos() {
-        DefaultTableModel sessionModel = new DefaultTableModel(
+        sessionModel = new DefaultTableModel(
                 new Object[]{"Session ID", "Type", "Trainer", "Schedule Date", "Status"}, 0
         ) {
             @Override
@@ -108,12 +121,9 @@ public class MemberDashboard extends JFrame {
                 return false;
             }
         };
-
-        sessionModel.addRow(new Object[]{"SES-101", "Strength & Conditioning", "Coach Alex", "2026-11-22 09:00 AM", "Available"});
-        sessionModel.addRow(new Object[]{"SES-102", "HIIT Cardio", "Coach Mia", "2026-11-23 04:00 PM", "Booked"});
         tblSessions.setModel(sessionModel);
 
-        DefaultTableModel attendanceModel = new DefaultTableModel(
+        attendanceModel = new DefaultTableModel(
                 new Object[]{"Attendance ID", "Session Date", "Session Type", "Status"}, 0
         ) {
             @Override
@@ -121,13 +131,15 @@ public class MemberDashboard extends JFrame {
                 return false;
             }
         };
-        attendanceModel.addRow(new Object[]{"ATT-001", "2026-11-18", "Strength & Conditioning", "Present"});
         tblAttendance.setModel(attendanceModel);
 
-        cmbPlans.addItem("Monthly Basic (30 Days)");
-        cmbPlans.addItem("Quarterly Pro (90 Days)");
-        cmbPlans.addItem("Annual Elite (365 Days)");
+        availablePlans = manager.getPlans();
+        cmbPlans.removeAllItems();
+        for (MembershipPlan plan : availablePlans) {
+            cmbPlans.addItem(plan.getPlanName() + " (" + plan.getDurationMonths() + " mo)");
+        }
 
+        cmbPaymentMethod.removeAllItems();
         cmbPaymentMethod.addItem("Cash");
         cmbPaymentMethod.addItem("GCash");
         cmbPaymentMethod.addItem("Credit/Debit Card");
@@ -135,157 +147,176 @@ public class MemberDashboard extends JFrame {
         updatePriceDisplay();
     }
 
+    private void refreshAll() {
+        populateMemberHeader();
+        refreshSessionsTable();
+        refreshAttendanceTable();
+    }
+
+    private void refreshSessionsTable() {
+        sessionModel.setRowCount(0);
+        displayedSessions = manager.getSessions();
+        for (Session s : displayedSessions) {
+            String trainerName = s.getTrainer() != null ? s.getTrainer().getName() : "TBA";
+            String dateStr = s.getSessionDate() != null ? s.getSessionDate().format(DATE_TIME_FMT) : "";
+            String displayStatus;
+            if ("Cancelled".equalsIgnoreCase(s.getStatus())) {
+                displayStatus = "Cancelled";
+            } else if (currentMember != null && s.getEnrolledMembers().contains(currentMember)) {
+                displayStatus = "Booked";
+            } else if (s.getEnrolledMembers().size() >= s.getMaxCapacity()) {
+                displayStatus = "Full";
+            } else {
+                displayStatus = "Available (" + s.getEnrolledMembers().size() + "/" + s.getMaxCapacity() + ")";
+            }
+            sessionModel.addRow(new Object[]{
+                    "SES-" + s.getSessionID(), s.getType(), trainerName, dateStr, displayStatus
+            });
+        }
+    }
+
+    private void refreshAttendanceTable() {
+        attendanceModel.setRowCount(0);
+        if (currentMember == null) {
+            return;
+        }
+        for (Attendance a : manager.getAttendanceForMember(currentMember)) {
+            String dateStr = a.getCheckInTime() != null ? a.getCheckInTime().format(DATE_TIME_FMT) : "";
+            String sessionType = a.getSession() != null ? a.getSession().getType() : "General Gym Check-In";
+            attendanceModel.addRow(new Object[]{
+                    "ATT-" + a.getAttendanceID(), dateStr, sessionType, a.isPresent() ? "Present" : "Absent"
+            });
+        }
+    }
+
     private void updatePriceDisplay() {
         int index = cmbPlans.getSelectedIndex();
-        if (index == 0) lblPlanPrice.setText("Amount Due: PHP 1,200.00");
-        else if (index == 1) lblPlanPrice.setText("Amount Due: PHP 3,200.00");
-        else lblPlanPrice.setText("Amount Due: PHP 11,000.00");
+        if (index >= 0 && index < availablePlans.size()) {
+            MembershipPlan plan = availablePlans.get(index);
+            lblPlanPrice.setText(String.format("Amount Due: PHP %,.2f", plan.getPrice()));
+        } else {
+            lblPlanPrice.setText("Amount Due: PHP 0.00");
+        }
     }
 
     private void setupListeners() {
         cmbPlans.addActionListener(e -> updatePriceDisplay());
 
         btnBookSession.addActionListener(e -> {
-
-            if (currentMember.getMembershipPlan() == null) {
-                JOptionPane.showMessageDialog(
-                        this,"Please subscribe to a membership plan first.","Membership Required",
-                        JOptionPane.WARNING_MESSAGE
-                );
+            if (currentMember == null) {
+                JOptionPane.showMessageDialog(this, "No member account is currently loaded.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
-            if (!"Active".equalsIgnoreCase(currentMember.getStatus())) {
-                JOptionPane.showMessageDialog(
-                        this,"Your membership is not active.\n\n" + "Please renew or activate your membership before booking sessions.","Inactive Membership",
-                        JOptionPane.WARNING_MESSAGE
-                );
-                return;
-            }
-
-            if (currentMember.getExpiryDate() == null ||
-                    currentMember.getExpiryDate().isBefore(java.time.LocalDate.now())) {
-
-                JOptionPane.showMessageDialog(
-                        this,"Your membership has expired.\n\n" + "Please renew your membership to book sessions.","Expired Membership",
-                        JOptionPane.WARNING_MESSAGE
-                );
-                return;
-            }
-
             int row = tblSessions.getSelectedRow();
-
-            if (row == -1) {
+            if (row == -1 || row >= displayedSessions.size()) {
                 JOptionPane.showMessageDialog(
-                        this,"Please select a session from the table first.","Selection Required",JOptionPane.WARNING_MESSAGE
+                        this, "Please select a session from the table first.", "Selection Required", JOptionPane.WARNING_MESSAGE
                 );
                 return;
             }
-
-            String status = tblSessions.getValueAt(row, 4).toString();
-
-            if ("Booked".equalsIgnoreCase(status)) {
+            Session session = displayedSessions.get(row);
+            try {
+                manager.bookSession(currentMember, session.getSessionID());
+                refreshSessionsTable();
                 JOptionPane.showMessageDialog(
-                        this,"This session is already booked.","Already Booked",JOptionPane.WARNING_MESSAGE
+                        this,
+                        "Session SES-" + session.getSessionID() + " booked successfully!",
+                        "Booking Confirmed",
+                        JOptionPane.INFORMATION_MESSAGE
                 );
-                return;
+            } catch (IllegalStateException | IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Cannot Book Session", JOptionPane.WARNING_MESSAGE);
             }
-
-            String sessionId = tblSessions.getValueAt(row, 0).toString();
-
-            tblSessions.setValueAt("Booked", row, 4);
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Session " + sessionId + " booked successfully!",
-                    "Booking Confirmed",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
         });
 
         btnCancelSession.addActionListener(e -> {
+            if (currentMember == null) {
+                JOptionPane.showMessageDialog(this, "No member account is currently loaded.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             int row = tblSessions.getSelectedRow();
-            if (row == -1) {
+            if (row == -1 || row >= displayedSessions.size()) {
                 JOptionPane.showMessageDialog(this, "Please select a booked session to cancel.", "Selection Required", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            String sessionId = tblSessions.getValueAt(row, 0).toString();
+            Session session = displayedSessions.get(row);
+            if (!session.getEnrolledMembers().contains(currentMember)) {
+                JOptionPane.showMessageDialog(this, "You are not booked in this session.", "Not Booked", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             int confirm = JOptionPane.showConfirmDialog(
                     this,
-                    "Are you sure you want to cancel session " + sessionId + "?","Confirm Cancel Session",JOptionPane.YES_NO_OPTION
+                    "Are you sure you want to cancel session SES-" + session.getSessionID() + "?",
+                    "Confirm Cancel Session",
+                    JOptionPane.YES_NO_OPTION
             );
             if (confirm == JOptionPane.YES_OPTION) {
-                tblSessions.setValueAt("Available", row, 4);
-                JOptionPane.showMessageDialog(this, "Session " + sessionId + " has been cancelled.", "Session Cancelled", JOptionPane.INFORMATION_MESSAGE);
+                manager.cancelBooking(currentMember, session.getSessionID());
+                refreshSessionsTable();
+                JOptionPane.showMessageDialog(this, "Session SES-" + session.getSessionID() + " has been cancelled.", "Session Cancelled", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
         btnRenewPay.addActionListener(e -> {
-                if (currentMember == null) {
-                    JOptionPane.showMessageDialog(
-                            this, "No member account is currently loaded.", "Error",JOptionPane.ERROR_MESSAGE
-                    );
-                    return;
-                }
-
-                int selectedIndex = cmbPlans.getSelectedIndex();
-                String method = (String) cmbPaymentMethod.getSelectedItem();
-
-                if (selectedIndex == -1 || method == null) {
-                    JOptionPane.showMessageDialog(
-                            this, "Please select a membership plan and payment method.", "Selection Required",JOptionPane.WARNING_MESSAGE
-                    );
-                    return;
-                }
-
-                MembershipPlan selectedPlan;
-
-                if (selectedIndex == 0) {
-                    selectedPlan = new MembershipPlan(
-                            1, "Monthly Basic", 1200.00, 1, "Basic gym membership"
-                    );
-                } else if (selectedIndex == 1) {
-                    selectedPlan = new MembershipPlan(
-                            2, "Quarterly Pro", 3200.00, 3, "Quarterly gym membership"
-                    );
-                } else {
-                    selectedPlan = new MembershipPlan(
-                            3, "Annual Elite", 11000.00, 12, "Annual gym membership"
-                    );
-                }
-
-                int confirm = JOptionPane.showConfirmDialog(
-                        this,
-                        "Confirm Membership Payment?\n\n" + "Plan: " + selectedPlan.getPlanName() + "\n" +"Price: PHP " + String.format("%.2f", selectedPlan.getPrice()) + "\n" +"Duration: " + selectedPlan.getDurationMonths() + " month(s)\n" +"Payment Method: " + method, "Confirm Payment",JOptionPane.YES_NO_OPTION
+            if (currentMember == null) {
+                JOptionPane.showMessageDialog(
+                        this, "No member account is currently loaded.", "Error", JOptionPane.ERROR_MESSAGE
                 );
+                return;
+            }
 
-                if (confirm != JOptionPane.YES_OPTION) {
-                    return;
-                }
+            int selectedIndex = cmbPlans.getSelectedIndex();
+            String method = (String) cmbPaymentMethod.getSelectedItem();
 
-                try {
-                    Payment payment = new Payment(
-                            1,
-                            currentMember,
-                            selectedPlan,
-                            selectedPlan.getPrice(),
-                            method
-                    );
+            if (selectedIndex < 0 || selectedIndex >= availablePlans.size() || method == null) {
+                JOptionPane.showMessageDialog(
+                        this, "Please select a membership plan and payment method.", "Selection Required", JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
 
-                    payment.processPayment();
-                    populateMemberHeader();
+            MembershipPlan selectedPlan = availablePlans.get(selectedIndex);
 
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "PAYMENT RECEIPT\n\n" + "Member: " + currentMember.getName() + "\n" + "Plan: " + selectedPlan.getPlanName() + "\n" + "Amount: PHP " + String.format("%.2f", payment.getAmount()) + "\n" + "Duration: " + selectedPlan.getDurationMonths() + " month(s)\n" + "Payment Method: " + payment.getMethod() + "\n" + "Payment Date: " + payment.getPaymentDate() + "\n" + "Expiry Date: " + currentMember.getExpiryDate() + "\n" + "Status: " + currentMember.getStatus(), "Payment Successful", JOptionPane.INFORMATION_MESSAGE
-                    );
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Confirm Membership Payment?\n\n"
+                            + "Plan: " + selectedPlan.getPlanName() + "\n"
+                            + "Price: PHP " + String.format("%.2f", selectedPlan.getPrice()) + "\n"
+                            + "Duration: " + selectedPlan.getDurationMonths() + " month(s)\n"
+                            + "Payment Method: " + method,
+                    "Confirm Payment",
+                    JOptionPane.YES_NO_OPTION
+            );
 
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(
-                            this, "Payment failed: " + ex.getMessage(), "Payment Error", JOptionPane.ERROR_MESSAGE
-                    );
-                }
-            });
+            if (confirm != JOptionPane.YES_OPTION) {
+                return;
+            }
+
+            try {
+                Payment payment = manager.processPayment(currentMember, selectedPlan, method);
+                refreshAll();
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "PAYMENT RECEIPT\n\n"
+                                + "Payment ID: #" + payment.getPaymentID() + "\n"
+                                + "Member: " + currentMember.getName() + "\n"
+                                + "Plan: " + selectedPlan.getPlanName() + "\n"
+                                + "Amount: PHP " + String.format("%.2f", payment.getAmount()) + "\n"
+                                + "Duration: " + selectedPlan.getDurationMonths() + " month(s)\n"
+                                + "Payment Method: " + payment.getMethod() + "\n"
+                                + "Payment Date: " + payment.getPaymentDate() + "\n"
+                                + "Expiry Date: " + currentMember.getExpiryDate() + "\n"
+                                + "Status: " + currentMember.getStatus(),
+                        "Payment Successful",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(
+                        this, "Payment failed: " + ex.getMessage(), "Payment Error", JOptionPane.ERROR_MESSAGE
+                );
+            }
+        });
 
         btnLogout.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(
@@ -301,5 +332,4 @@ public class MemberDashboard extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new MemberDashboard().setVisible(true));
     }
-
 }

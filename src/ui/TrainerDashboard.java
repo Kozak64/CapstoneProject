@@ -1,14 +1,23 @@
 package ui;
 
-import models.Trainer;
+import models.*;
+import services.GymSystemManager;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TrainerDashboard extends JFrame {
+    private static final DateTimeFormatter DATE_TIME_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     private final Trainer currentTrainer;
+    private final GymSystemManager manager = GymSystemManager.getInstance();
 
     private JPanel mainPanel;
     private JLabel DashboardTitle;
@@ -26,6 +35,10 @@ public class TrainerDashboard extends JFrame {
     private DefaultTableModel sessionsModel;
     private DefaultTableModel attendanceModel;
 
+    private List<Session> displayedSessions = new ArrayList<>();
+    private List<Member> displayedAttendanceMembers = new ArrayList<>();
+    private boolean updatingCombo = false;
+
     public TrainerDashboard(Trainer trainer) {
         this.currentTrainer = trainer;
 
@@ -39,6 +52,7 @@ public class TrainerDashboard extends JFrame {
         populateHeader();
         setupTablesAndCombos();
         setupListeners();
+        refreshSessions();
     }
 
     public TrainerDashboard() {
@@ -76,8 +90,8 @@ public class TrainerDashboard extends JFrame {
                     + "   |   Specialization: " + currentTrainer.getSpecialization()
                     + "   |   Schedule: " + currentTrainer.getSchedule());
         } else {
-            DashboardTitle.setText("Trainer Portal - Coach Alex (Strength)");
-            Subtitle.setText("Trainer ID: 201   |   Specialization: Strength   |   Schedule: MWF 8AM-5PM");
+            DashboardTitle.setText("Trainer Portal - All Trainers");
+            Subtitle.setText("Preview Mode");
         }
     }
 
@@ -90,14 +104,7 @@ public class TrainerDashboard extends JFrame {
                 return false;
             }
         };
-        sessionsModel.addRow(new Object[]{"SES-101", "Strength & Conditioning", "2026-11-22 09:00 AM", "8 / 15", "Scheduled"});
-        sessionsModel.addRow(new Object[]{"SES-102", "HIIT Cardio", "2026-11-23 04:00 PM", "12 / 15", "Scheduled"});
-        sessionsModel.addRow(new Object[]{"SES-103", "Core & Mobility", "2026-11-25 10:00 AM", "5 / 12", "Scheduled"});
         Sessiontabel.setModel(sessionsModel);
-
-        cmSessionFilter.addItem("SES-101 - Strength & Conditioning");
-        cmSessionFilter.addItem("SES-102 - HIIT Cardio");
-        cmSessionFilter.addItem("SES-103 - Core & Mobility");
 
         attendanceModel = new DefaultTableModel(
                 new Object[]{"User ID", "Member Name", "Plan", "Attendance Status"}, 0
@@ -107,54 +114,122 @@ public class TrainerDashboard extends JFrame {
                 return false;
             }
         };
-        attendanceModel.addRow(new Object[]{"25-1234-567", "Juan Dela Cruz", "Gold", "Pending"});
-        attendanceModel.addRow(new Object[]{"25-2045-812", "Maria Santos", "Annual Elite", "Pending"});
-        attendanceModel.addRow(new Object[]{"25-3310-194", "Carlos Reyes", "Monthly Basic", "Present"});
         AttendanceTabel.setModel(attendanceModel);
     }
 
+    private void refreshSessions() {
+        int prevFilterIdx = cmSessionFilter.getSelectedIndex();
+
+        displayedSessions = manager.getSessionsForTrainer(currentTrainer);
+        sessionsModel.setRowCount(0);
+
+        updatingCombo = true;
+        cmSessionFilter.removeAllItems();
+        for (Session s : displayedSessions) {
+            String dateStr = s.getSessionDate() != null ? s.getSessionDate().format(DATE_TIME_FMT) : "";
+            sessionsModel.addRow(new Object[]{
+                    "SES-" + s.getSessionID(),
+                    s.getType(),
+                    dateStr,
+                    s.getEnrolledMembers().size() + " / " + s.getMaxCapacity(),
+                    s.getStatus()
+            });
+            cmSessionFilter.addItem("SES-" + s.getSessionID() + " - " + s.getType());
+        }
+        if (prevFilterIdx >= 0 && prevFilterIdx < cmSessionFilter.getItemCount()) {
+            cmSessionFilter.setSelectedIndex(prevFilterIdx);
+        } else if (cmSessionFilter.getItemCount() > 0) {
+            cmSessionFilter.setSelectedIndex(0);
+        }
+        updatingCombo = false;
+
+        refreshAttendanceTable();
+    }
+
+    private void refreshAttendanceTable() {
+        attendanceModel.setRowCount(0);
+        displayedAttendanceMembers = new ArrayList<>();
+
+        int idx = cmSessionFilter.getSelectedIndex();
+        if (idx < 0 || idx >= displayedSessions.size()) {
+            return;
+        }
+        Session selected = displayedSessions.get(idx);
+        for (Member m : selected.getEnrolledMembers()) {
+            displayedAttendanceMembers.add(m);
+            String planName = m.getMembershipPlan() != null ? m.getMembershipPlan().getPlanName() : "None";
+            Attendance record = manager.findAttendance(m, selected);
+            String status = record == null ? "Pending" : (record.isPresent() ? "Present" : "Absent");
+            attendanceModel.addRow(new Object[]{
+                    m.getUserID(), m.getName(), planName, status
+            });
+        }
+    }
+
     private void setupListeners() {
+        cmSessionFilter.addActionListener(e -> {
+            if (!updatingCombo) {
+                refreshAttendanceTable();
+            }
+        });
         updateScheduleButton.addActionListener(e -> handleUpdateSchedule());
         cancelSessionButton.addActionListener(e -> handleCancelSession());
-        markPresentButton.addActionListener(e -> handleMarkAttendance("Present"));
-        markAbsentButton.addActionListener(e -> handleMarkAttendance("Absent"));
+        markPresentButton.addActionListener(e -> handleMarkAttendance(true));
+        markAbsentButton.addActionListener(e -> handleMarkAttendance(false));
         btnLogout.addActionListener(e -> handleLogout());
     }
 
     private void handleUpdateSchedule() {
         int row = Sessiontabel.getSelectedRow();
-        if (row == -1) {
+        if (row == -1 || row >= displayedSessions.size()) {
             JOptionPane.showMessageDialog(this, "Please select a session first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        String current = sessionsModel.getValueAt(row, 2).toString();
-        String updated = JOptionPane.showInputDialog(this, "Enter new schedule date/time:", current);
-        if (updated != null && !updated.trim().isEmpty()) {
-            sessionsModel.setValueAt(updated.trim(), row, 2);
+        Session session = displayedSessions.get(row);
+        String current = session.getSessionDate() != null ? session.getSessionDate().format(DATE_TIME_FMT) : "";
+        String updated = JOptionPane.showInputDialog(this, "Enter new schedule date/time (yyyy-MM-dd HH:mm):", current);
+        if (updated == null || updated.trim().isEmpty()) {
+            return;
+        }
+        try {
+            LocalDateTime newDate = LocalDateTime.parse(updated.trim(), DATE_TIME_FMT);
+            manager.updateSessionDate(session.getSessionID(), newDate);
+            refreshSessions();
             JOptionPane.showMessageDialog(this, "Session schedule updated.", "Updated", JOptionPane.INFORMATION_MESSAGE);
+        } catch (DateTimeParseException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid format. Use yyyy-MM-dd HH:mm (e.g. 2026-11-23 09:00).", "Invalid Date", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void handleCancelSession() {
         int row = Sessiontabel.getSelectedRow();
-        if (row == -1) {
+        if (row == -1 || row >= displayedSessions.size()) {
             JOptionPane.showMessageDialog(this, "Please select a session to cancel.", "Selection Required", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        String id = sessionsModel.getValueAt(row, 0).toString();
-        int confirm = JOptionPane.showConfirmDialog(this, "Cancel session " + id + "?", "Confirm Cancel", JOptionPane.YES_NO_OPTION);
+        Session session = displayedSessions.get(row);
+        int confirm = JOptionPane.showConfirmDialog(this, "Cancel session SES-" + session.getSessionID() + "?", "Confirm Cancel", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            sessionsModel.setValueAt("Cancelled", row, 4);
+            manager.cancelSession(session.getSessionID());
+            refreshSessions();
         }
     }
 
-    private void handleMarkAttendance(String status) {
+    private void handleMarkAttendance(boolean present) {
+        int sessionIdx = cmSessionFilter.getSelectedIndex();
+        if (sessionIdx < 0 || sessionIdx >= displayedSessions.size()) {
+            JOptionPane.showMessageDialog(this, "Please select a session first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         int row = AttendanceTabel.getSelectedRow();
-        if (row == -1) {
+        if (row == -1 || row >= displayedAttendanceMembers.size()) {
             JOptionPane.showMessageDialog(this, "Please select a member first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        attendanceModel.setValueAt(status, row, 3);
+        Session session = displayedSessions.get(sessionIdx);
+        Member member = displayedAttendanceMembers.get(row);
+        manager.markAttendance(member, session, present);
+        refreshAttendanceTable();
     }
 
     private void handleLogout() {
