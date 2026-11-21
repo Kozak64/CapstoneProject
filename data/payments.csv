@@ -1,2 +1,5 @@
 paymentID,memberUserID,planID,amount,paymentDate,method,status
 501,25-1001-100,1,1200.0,2026-11-22,GCash,Completed
+502,26-1232-839,1,1200.0,2026-11-22,Cash,Completed
+503,26-1232-839,1,1200.0,2026-11-22,Cash,Completed
+504,26-1232-839,1,1200.0,2026-11-22,Credit/Debit Card,Completed
