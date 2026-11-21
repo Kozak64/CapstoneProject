@@ -1,0 +1,4 @@
+sessionID,trainerUserID,sessionDate,type,maxCapacity,status,enrolledMemberIDs
+101,25-1231-123,2026-11-23T09:00,Strength & Conditioning,15,Scheduled,25-1001-100
+102,25-1231-123,2026-11-25T10:30,HIIT Cardio,15,Scheduled,
+103,25-1003-200,2026-11-26T08:30,Yoga Flow,12,Scheduled,

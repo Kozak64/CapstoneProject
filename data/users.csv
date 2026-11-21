@@ -1,0 +1,6 @@
+role,userID,name,email,password,extra1,extra2,extra3
+Admin,00-1111-222,System Admin,admin@gym.com,admin123,101,,
+Trainer,25-1231-123,Coach Alex,alex@gym.com,trainer123,201,Strength & Conditioning,MWF 8AM-5PM
+Member,25-1001-100,Juan Dela Cruz,juan@gym.com,pass1234,1001,1,2026-11-22|2026-12-22|Active
+Member,25-1002-100,Maria Santos,maria@gym.com,member123,1002,2,2026-11-22|2027-02-22|Active
+Trainer,25-1003-200,Coach Mia,mia@gym.com,trainer123,202,Yoga & Pilates,TThS 9AM-6PM

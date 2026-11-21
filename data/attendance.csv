@@ -1,0 +1,2 @@
+attendanceID,memberUserID,sessionID,checkInTime,present
+1,25-1001-100,101,2026-11-22T01:28:18.070986700,true
