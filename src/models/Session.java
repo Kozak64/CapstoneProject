@@ -32,6 +32,7 @@ public class Session {
     public int getMaxCapacity() { return maxCapacity; }
     public String getStatus() { return status; }
 
+    public void setSessionDate(LocalDateTime sessionDate) { this.sessionDate = sessionDate; }
     public void setStatus(String status) { this.status = status; }
 
     public void book(Member member) {

@@ -1,14 +1,24 @@
 package ui;
 
-import models.Admin;
+import exceptions.DuplicateUserException;
+import models.*;
+import services.GymSystemManager;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.List;
 
 public class AdminDashboard extends JFrame {
+    private static final DateTimeFormatter DATE_TIME_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     private final Admin currentAdmin;
+    private final GymSystemManager manager = GymSystemManager.getInstance();
 
     private JLabel lblTitle;
     private JLabel lblSubtitle;
@@ -36,8 +46,7 @@ public class AdminDashboard extends JFrame {
 
         initUI();
         populateHeader();
-        loadDummyData();
-        updateSummary();
+        refreshAllTables();
     }
 
     public AdminDashboard() {
@@ -49,7 +58,6 @@ public class AdminDashboard extends JFrame {
         root.setBackground(UITheme.BG_GRAY);
         root.setBorder(new EmptyBorder(16, 20, 16, 20));
 
-        // --- Header Card ---
         JPanel headerCard = new JPanel(new BorderLayout(12, 4));
         UITheme.styleCard(headerCard, 16, 20);
 
@@ -78,7 +86,6 @@ public class AdminDashboard extends JFrame {
         headerCard.add(logoutWrap, BorderLayout.EAST);
         root.add(headerCard, BorderLayout.NORTH);
 
-        // --- Main Tabbed Card ---
         JPanel bodyCard = new JPanel(new BorderLayout());
         UITheme.styleCard(bodyCard, 12, 16);
 
@@ -120,7 +127,7 @@ public class AdminDashboard extends JFrame {
 
         JButton btnRemove = new JButton("Remove Member");
         UITheme.styleDangerButton(btnRemove);
-        btnRemove.addActionListener(e -> removeSelectedRow(tblMembers, membersModel, "member"));
+        btnRemove.addActionListener(e -> handleRemoveMember());
 
         JButton btnToggleStatus = new JButton("Toggle Active/Inactive");
         UITheme.styleSecondaryButton(btnToggleStatus);
@@ -163,11 +170,15 @@ public class AdminDashboard extends JFrame {
 
         JButton btnRemove = new JButton("Remove Trainer");
         UITheme.styleDangerButton(btnRemove);
-        btnRemove.addActionListener(e -> removeSelectedRow(tblTrainers, trainersModel, "trainer"));
+        btnRemove.addActionListener(e -> handleRemoveTrainer());
 
         JButton btnEditSchedule = new JButton("Edit Schedule");
         UITheme.styleSecondaryButton(btnEditSchedule);
         btnEditSchedule.addActionListener(e -> editTrainerSchedule());
+
+        JButton btnCreateSession = new JButton("Create Session");
+        UITheme.styleSecondaryButton(btnCreateSession);
+        btnCreateSession.addActionListener(e -> handleCreateSession());
 
         JButton btnAdd = new JButton("Add Trainer");
         UITheme.stylePrimaryButton(btnAdd);
@@ -175,6 +186,7 @@ public class AdminDashboard extends JFrame {
 
         actions.add(btnRemove);
         actions.add(btnEditSchedule);
+        actions.add(btnCreateSession);
         actions.add(btnAdd);
         panel.add(actions, BorderLayout.SOUTH);
 
@@ -206,7 +218,7 @@ public class AdminDashboard extends JFrame {
 
         JButton btnDelete = new JButton("Delete Plan");
         UITheme.styleDangerButton(btnDelete);
-        btnDelete.addActionListener(e -> removeSelectedRow(tblPlans, plansModel, "plan"));
+        btnDelete.addActionListener(e -> handleDeletePlan());
 
         JButton btnEditPrice = new JButton("Edit Price");
         UITheme.styleSecondaryButton(btnEditPrice);
@@ -256,8 +268,11 @@ public class AdminDashboard extends JFrame {
         UITheme.stylePrimaryButton(btnGenerateReport);
         btnGenerateReport.addActionListener(e -> JOptionPane.showMessageDialog(
                 this,
-                lblReportSummary.getText() + "\nMembers: " + membersModel.getRowCount()
-                        + "\nTrainers: " + trainersModel.getRowCount(),
+                lblReportSummary.getText()
+                        + "\nMembers: " + manager.getMembers().size()
+                        + "\nTrainers: " + manager.getTrainers().size()
+                        + "\nPlans: " + manager.getPlans().size()
+                        + "\nSessions: " + manager.getSessions().size(),
                 "System Report",
                 JOptionPane.INFORMATION_MESSAGE
         ));
@@ -276,47 +291,86 @@ public class AdminDashboard extends JFrame {
         }
     }
 
-    private void loadDummyData() {
-        membersModel.addRow(new Object[]{"25-1234-567", "Juan Dela Cruz", "member@gym.com", "Gold", "2026-12-21", "Active"});
-        membersModel.addRow(new Object[]{"25-2045-812", "Maria Santos", "maria@gym.com", "Annual Elite", "2027-08-15", "Active"});
-        membersModel.addRow(new Object[]{"25-3310-194", "Carlos Reyes", "carlos@gym.com", "Monthly Basic", "2026-10-01", "Expired"});
+    private void refreshAllTables() {
+        refreshMembersTable();
+        refreshTrainersTable();
+        refreshPlansTable();
+        refreshPaymentsTable();
+        updateSummary();
+    }
 
-        trainersModel.addRow(new Object[]{"25-1231-123", 201, "Coach Alex", "Strength & Conditioning", "MWF 8AM-5PM"});
-        trainersModel.addRow(new Object[]{"25-4412-009", 202, "Coach Mia", "HIIT & Cardio", "TThS 9AM-6PM"});
+    private void refreshMembersTable() {
+        membersModel.setRowCount(0);
+        for (Member m : manager.getMembers()) {
+            String planName = m.getMembershipPlan() != null ? m.getMembershipPlan().getPlanName() : "None";
+            String expiry = m.getExpiryDate() != null ? m.getExpiryDate().toString() : "N/A";
+            membersModel.addRow(new Object[]{
+                    m.getUserID(), m.getName(), m.getEmail(), planName, expiry, m.getStatus()
+            });
+        }
+    }
 
-        plansModel.addRow(new Object[]{1, "Monthly Basic", 1200.00, 1, "Gym floor access"});
-        plansModel.addRow(new Object[]{2, "Quarterly Pro", 3200.00, 3, "Gym + group classes"});
-        plansModel.addRow(new Object[]{3, "Annual Elite", 11000.00, 12, "All access + PT sessions"});
+    private void refreshTrainersTable() {
+        trainersModel.setRowCount(0);
+        for (Trainer t : manager.getTrainers()) {
+            trainersModel.addRow(new Object[]{
+                    t.getUserID(), t.getTrainerID(), t.getName(), t.getSpecialization(), t.getSchedule()
+            });
+        }
+    }
 
-        paymentsModel.addRow(new Object[]{501, "Juan Dela Cruz", "Monthly Basic", 1200.00, "GCash", "2026-11-20", "Completed"});
-        paymentsModel.addRow(new Object[]{502, "Maria Santos", "Annual Elite", 11000.00, "Card", "2026-11-18", "Completed"});
+    private void refreshPlansTable() {
+        plansModel.setRowCount(0);
+        for (MembershipPlan p : manager.getPlans()) {
+            plansModel.addRow(new Object[]{
+                    p.getPlanID(), p.getPlanName(), String.format("%.2f", p.getPrice()),
+                    p.getDurationMonths(), p.getDescription()
+            });
+        }
+    }
+
+    private void refreshPaymentsTable() {
+        paymentsModel.setRowCount(0);
+        for (Payment p : manager.getPayments()) {
+            String memberName = p.getMember() != null ? p.getMember().getName() : "Unknown";
+            String planName = p.getPlan() != null ? p.getPlan().getPlanName() : "N/A";
+            String date = p.getPaymentDate() != null ? p.getPaymentDate().toString() : "";
+            paymentsModel.addRow(new Object[]{
+                    p.getPaymentID(), memberName, planName,
+                    String.format("%.2f", p.getAmount()), p.getMethod(), date, p.getStatus()
+            });
+        }
     }
 
     private void updateSummary() {
-        double total = 0;
-        for (int i = 0; i < paymentsModel.getRowCount(); i++) {
-            if ("Completed".equalsIgnoreCase(paymentsModel.getValueAt(i, 6).toString())) {
-                total += Double.parseDouble(paymentsModel.getValueAt(i, 3).toString());
-            }
-        }
-        String totalFmt = String.format("PHP %,.2f", total);
-        lblSubtitle.setText("Members: " + membersModel.getRowCount()
-                + "   |   Trainers: " + trainersModel.getRowCount()
+        String totalFmt = String.format("PHP %,.2f", manager.getTotalCompletedRevenue());
+        lblSubtitle.setText("Members: " + manager.getMembers().size()
+                + "   |   Trainers: " + manager.getTrainers().size()
                 + "   |   Total Revenue: " + totalFmt);
         lblReportSummary.setText("Total Completed Revenue: " + totalFmt
-                + "   (" + paymentsModel.getRowCount() + " transactions)");
+                + "   (" + manager.getPayments().size() + " transactions)");
     }
 
-    private void removeSelectedRow(JTable table, DefaultTableModel model, String label) {
-        int row = table.getSelectedRow();
+    private String suggestUserID(int suffix) {
+        int mid = 1001;
+        String candidate;
+        do {
+            candidate = String.format("25-%04d-%03d", mid++, suffix);
+        } while (manager.userIDExists(candidate));
+        return candidate;
+    }
+
+    private void handleRemoveMember() {
+        int row = tblMembers.getSelectedRow();
         if (row == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a " + label + " first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a member first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        int confirm = JOptionPane.showConfirmDialog(this, "Remove selected " + label + "?", "Confirm Removal", JOptionPane.YES_NO_OPTION);
+        String userID = membersModel.getValueAt(row, 0).toString();
+        int confirm = JOptionPane.showConfirmDialog(this, "Remove member " + userID + "?", "Confirm Removal", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            model.removeRow(row);
-            updateSummary();
+            manager.removeMember(userID);
+            refreshAllTables();
         }
     }
 
@@ -326,18 +380,64 @@ public class AdminDashboard extends JFrame {
             JOptionPane.showMessageDialog(this, "Please select a member first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        String current = membersModel.getValueAt(row, 5).toString();
-        membersModel.setValueAt("Active".equalsIgnoreCase(current) ? "Inactive" : "Active", row, 5);
+        String userID = membersModel.getValueAt(row, 0).toString();
+        manager.toggleMemberStatus(userID);
+        refreshMembersTable();
     }
 
     private void handleAddMember() {
-        String name = JOptionPane.showInputDialog(this, "Member Full Name:");
-        if (name == null || name.trim().isEmpty()) return;
-        String email = JOptionPane.showInputDialog(this, "Member Email:");
-        if (email == null || email.trim().isEmpty()) return;
-        String id = "25-" + String.format("%04d", membersModel.getRowCount() + 10) + "-100";
-        membersModel.addRow(new Object[]{id, name.trim(), email.trim(), "Monthly Basic", "2026-12-21", "Active"});
-        updateSummary();
+        JTextField tfId = new JTextField(suggestUserID(100));
+        JTextField tfName = new JTextField();
+        JTextField tfEmail = new JTextField();
+        JPasswordField tfPass = new JPasswordField("member123");
+
+        List<MembershipPlan> plans = manager.getPlans();
+        JComboBox<String> cmbPlan = new JComboBox<>();
+        cmbPlan.addItem("None (Inactive)");
+        for (MembershipPlan p : plans) {
+            cmbPlan.addItem(p.getPlanName() + " (PHP " + String.format("%.2f", p.getPrice()) + ")");
+        }
+
+        JPanel form = new JPanel(new GridLayout(0, 2, 8, 6));
+        form.add(new JLabel("User ID (XX-XXXX-XXX):")); form.add(tfId);
+        form.add(new JLabel("Full Name:")); form.add(tfName);
+        form.add(new JLabel("Email:")); form.add(tfEmail);
+        form.add(new JLabel("Password:")); form.add(tfPass);
+        form.add(new JLabel("Membership Plan:")); form.add(cmbPlan);
+
+        int result = JOptionPane.showConfirmDialog(this, form, "Add Member", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (result != JOptionPane.OK_OPTION) return;
+
+        try {
+            int idx = cmbPlan.getSelectedIndex();
+            MembershipPlan selectedPlan = idx > 0 ? plans.get(idx - 1) : null;
+            String status = selectedPlan != null ? "Active" : "Inactive";
+            manager.addMember(
+                    tfId.getText().trim(),
+                    tfName.getText().trim(),
+                    tfEmail.getText().trim(),
+                    new String(tfPass.getPassword()),
+                    selectedPlan,
+                    status
+            );
+            refreshAllTables();
+        } catch (DuplicateUserException | IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Could Not Add Member", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void handleRemoveTrainer() {
+        int row = tblTrainers.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a trainer first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String userID = trainersModel.getValueAt(row, 0).toString();
+        int confirm = JOptionPane.showConfirmDialog(this, "Remove trainer " + userID + "?", "Confirm Removal", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            manager.removeTrainer(userID);
+            refreshAllTables();
+        }
     }
 
     private void editTrainerSchedule() {
@@ -346,22 +446,100 @@ public class AdminDashboard extends JFrame {
             JOptionPane.showMessageDialog(this, "Please select a trainer first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
             return;
         }
+        String userID = trainersModel.getValueAt(row, 0).toString();
         String current = trainersModel.getValueAt(row, 4).toString();
         String updated = JOptionPane.showInputDialog(this, "New Schedule:", current);
         if (updated != null && !updated.trim().isEmpty()) {
-            trainersModel.setValueAt(updated.trim(), row, 4);
+            manager.updateTrainerSchedule(userID, updated.trim());
+            refreshTrainersTable();
         }
     }
 
     private void handleAddTrainer() {
-        String name = JOptionPane.showInputDialog(this, "Trainer Full Name:");
-        if (name == null || name.trim().isEmpty()) return;
-        String spec = JOptionPane.showInputDialog(this, "Specialization:", "General Fitness");
-        if (spec == null || spec.trim().isEmpty()) return;
-        String id = "25-" + String.format("%04d", trainersModel.getRowCount() + 50) + "-200";
-        int trainerId = 200 + trainersModel.getRowCount() + 1;
-        trainersModel.addRow(new Object[]{id, trainerId, name.trim(), spec.trim(), "MWF 9AM-5PM"});
-        updateSummary();
+        JTextField tfId = new JTextField(suggestUserID(200));
+        JTextField tfName = new JTextField();
+        JTextField tfEmail = new JTextField();
+        JPasswordField tfPass = new JPasswordField("trainer123");
+        JTextField tfSpec = new JTextField("General Fitness");
+        JTextField tfSched = new JTextField("MWF 9AM-5PM");
+
+        JPanel form = new JPanel(new GridLayout(0, 2, 8, 6));
+        form.add(new JLabel("User ID (XX-XXXX-XXX):")); form.add(tfId);
+        form.add(new JLabel("Full Name:")); form.add(tfName);
+        form.add(new JLabel("Email:")); form.add(tfEmail);
+        form.add(new JLabel("Password:")); form.add(tfPass);
+        form.add(new JLabel("Specialization:")); form.add(tfSpec);
+        form.add(new JLabel("Schedule:")); form.add(tfSched);
+
+        int result = JOptionPane.showConfirmDialog(this, form, "Add Trainer", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (result != JOptionPane.OK_OPTION) return;
+
+        try {
+            manager.addTrainer(
+                    tfId.getText().trim(),
+                    tfName.getText().trim(),
+                    tfEmail.getText().trim(),
+                    new String(tfPass.getPassword()),
+                    tfSpec.getText().trim(),
+                    tfSched.getText().trim()
+            );
+            refreshAllTables();
+        } catch (DuplicateUserException | IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Could Not Add Trainer", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void handleCreateSession() {
+        int row = tblTrainers.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a trainer first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String trainerUserID = trainersModel.getValueAt(row, 0).toString();
+        User u = manager.findUserById(trainerUserID);
+        if (!(u instanceof Trainer)) return;
+        Trainer trainer = (Trainer) u;
+
+        JTextField tfType = new JTextField(trainer.getSpecialization());
+        JTextField tfDate = new JTextField(LocalDate.now().plusDays(1).atTime(9, 0).format(DATE_TIME_FMT));
+        JTextField tfCap = new JTextField("15");
+
+        JPanel form = new JPanel(new GridLayout(0, 2, 8, 6));
+        form.add(new JLabel("Trainer:")); form.add(new JLabel(trainer.getName()));
+        form.add(new JLabel("Session Type:")); form.add(tfType);
+        form.add(new JLabel("Date & Time (yyyy-MM-dd HH:mm):")); form.add(tfDate);
+        form.add(new JLabel("Max Capacity:")); form.add(tfCap);
+
+        int result = JOptionPane.showConfirmDialog(this, form, "Create Training Session", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (result != JOptionPane.OK_OPTION) return;
+
+        try {
+            LocalDateTime dateTime = LocalDateTime.parse(tfDate.getText().trim(), DATE_TIME_FMT);
+            int capacity = Integer.parseInt(tfCap.getText().trim());
+            String type = tfType.getText().trim();
+            if (type.isEmpty()) throw new IllegalArgumentException("Session type cannot be empty.");
+
+            Session created = manager.createSession(trainer, dateTime, type, capacity);
+            JOptionPane.showMessageDialog(this, "Created session SES-" + created.getSessionID() + " for " + trainer.getName() + ".", "Session Created", JOptionPane.INFORMATION_MESSAGE);
+        } catch (DateTimeParseException ex) {
+            JOptionPane.showMessageDialog(this, "Use date format yyyy-MM-dd HH:mm (e.g. 2026-11-23 09:00).", "Invalid Date", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Invalid Input", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void handleDeletePlan() {
+        int row = tblPlans.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a plan first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int planID = Integer.parseInt(plansModel.getValueAt(row, 0).toString());
+        int confirm = JOptionPane.showConfirmDialog(this, "Delete plan #" + planID + "?", "Confirm Removal", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            manager.deletePlan(planID);
+            refreshPlansTable();
+        }
     }
 
     private void editPlanPrice() {
@@ -370,30 +548,44 @@ public class AdminDashboard extends JFrame {
             JOptionPane.showMessageDialog(this, "Please select a plan first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
             return;
         }
+        int planID = Integer.parseInt(plansModel.getValueAt(row, 0).toString());
         String current = plansModel.getValueAt(row, 2).toString();
         String input = JOptionPane.showInputDialog(this, "New Price (PHP):", current);
         if (input != null && !input.trim().isEmpty()) {
             try {
                 double price = Double.parseDouble(input.trim());
-                if (price < 0) throw new NumberFormatException();
-                plansModel.setValueAt(price, row, 2);
-            } catch (NumberFormatException ex) {
+                manager.updatePlanPrice(planID, price);
+                refreshPlansTable();
+            } catch (IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(this, "Please enter a valid non-negative number.", "Invalid Price", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
     private void handleAddPlan() {
-        String name = JOptionPane.showInputDialog(this, "Plan Name:");
-        if (name == null || name.trim().isEmpty()) return;
-        String priceStr = JOptionPane.showInputDialog(this, "Price (PHP):", "1500");
-        if (priceStr == null) return;
+        JTextField tfName = new JTextField();
+        JTextField tfPrice = new JTextField("1500");
+        JTextField tfDuration = new JTextField("1");
+        JTextField tfDesc = new JTextField("Custom plan");
+
+        JPanel form = new JPanel(new GridLayout(0, 2, 8, 6));
+        form.add(new JLabel("Plan Name:")); form.add(tfName);
+        form.add(new JLabel("Price (PHP):")); form.add(tfPrice);
+        form.add(new JLabel("Duration (Months):")); form.add(tfDuration);
+        form.add(new JLabel("Description:")); form.add(tfDesc);
+
+        int result = JOptionPane.showConfirmDialog(this, form, "Add Membership Plan", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (result != JOptionPane.OK_OPTION) return;
+
         try {
-            double price = Double.parseDouble(priceStr.trim());
-            int nextId = plansModel.getRowCount() + 1;
-            plansModel.addRow(new Object[]{nextId, name.trim(), price, 1, "Custom plan"});
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid price.", "Error", JOptionPane.ERROR_MESSAGE);
+            String name = tfName.getText().trim();
+            if (name.isEmpty()) throw new IllegalArgumentException("Plan name cannot be empty.");
+            double price = Double.parseDouble(tfPrice.getText().trim());
+            int duration = Integer.parseInt(tfDuration.getText().trim());
+            manager.addPlan(name, price, duration, tfDesc.getText().trim());
+            refreshPlansTable();
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid plan details: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
