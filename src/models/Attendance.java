@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class Attendance {
     private int attendanceID;
     private Member member;
-    private Session session;        // nullable if it's a general gym check-in
+    private Session session;
     private LocalDateTime checkInTime;
     private boolean present;
 

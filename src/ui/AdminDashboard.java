@@ -389,7 +389,7 @@ public class AdminDashboard extends JFrame {
         JTextField tfId = new JTextField(suggestUserID(100));
         JTextField tfName = new JTextField();
         JTextField tfEmail = new JTextField();
-        JPasswordField tfPass = new JPasswordField("member123");
+        JPasswordField tfPass = new JPasswordField("member123"); UITheme.stylePasswordField(tfPass);
 
         List<MembershipPlan> plans = manager.getPlans();
         JComboBox<String> cmbPlan = new JComboBox<>();
@@ -459,7 +459,7 @@ public class AdminDashboard extends JFrame {
         JTextField tfId = new JTextField(suggestUserID(200));
         JTextField tfName = new JTextField();
         JTextField tfEmail = new JTextField();
-        JPasswordField tfPass = new JPasswordField("trainer123");
+        JPasswordField tfPass = new JPasswordField("trainer123"); UITheme.stylePasswordField(tfPass);
         JTextField tfSpec = new JTextField("General Fitness");
         JTextField tfSched = new JTextField("MWF 9AM-5PM");
 
