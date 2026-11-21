@@ -12,7 +12,7 @@
     </properties>
     <border type="none"/>
     <children>
-      <grid id="18062" binding="cardPanel" layout-manager="GridLayoutManager" row-count="11" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="18062" binding="cardPanel" layout-manager="GridLayoutManager" row-count="13" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="24" left="28" bottom="24" right="28"/>
         <constraints>
           <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -63,7 +63,7 @@
           </component>
           <component id="c6e41" class="javax.swing.JLabel" binding="passwordLabel">
             <constraints>
-              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Segoe UI" size="12" style="0"/>
@@ -72,7 +72,7 @@
           </component>
           <component id="315d4" class="javax.swing.JLabel" binding="confirmLabel">
             <constraints>
-              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Segoe UI" size="12" style="0"/>
@@ -81,7 +81,7 @@
           </component>
           <component id="90483" class="javax.swing.JButton" binding="registerButton" default-binding="true">
             <constraints>
-              <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+              <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="280" height="38"/>
               </grid>
             </constraints>
@@ -109,17 +109,34 @@
             </constraints>
             <properties/>
           </component>
-          <component id="a58c1" class="javax.swing.JPasswordField" binding="passwordTextField">
+          <component id="add56" class="javax.swing.JPasswordField" binding="confirmTextField">
             <constraints>
-              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+              <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="280" height="36"/>
               </grid>
             </constraints>
             <properties/>
           </component>
-          <component id="add56" class="javax.swing.JPasswordField" binding="confirmTextField">
+          <component id="a58c1" class="javax.swing.JPasswordField" binding="passwordTextField">
             <constraints>
               <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="280" height="36"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="a69ad" class="javax.swing.JLabel" binding="CustomIDLabel">
+            <constraints>
+              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font name="Segoe UI" size="12" style="0"/>
+              <text value="Enter ID (xx-xxxx-xxx)"/>
+            </properties>
+          </component>
+          <component id="7bd01" class="javax.swing.JTextField" binding="CustomIDTF">
+            <constraints>
+              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="280" height="36"/>
               </grid>
             </constraints>

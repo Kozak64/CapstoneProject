@@ -8,10 +8,13 @@ import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.plaf.FontUIResource;
+import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class LoginForm extends JFrame {
     private JTextField textField1;
@@ -48,61 +51,28 @@ public class LoginForm extends JFrame {
         });
     }
 
-    private void applyTheme(){
-        Color bgGray = new Color(241, 245, 249);
-        Color cardBorder = new Color(203, 213, 225);
-        Color textDark = new Color(15, 23, 42);
-        Color textMuted = new Color(100, 116, 139);
-        Color primaryBlue = new Color(37, 99, 235);
+    private void applyTheme() {
+        LoginMenu.setBackground(UITheme.BG_GRAY);
+        UITheme.styleCard(cardPanel, 24, 28);
 
-        LoginMenu.setBackground(bgGray);
+        titleLabel.setForeground(UITheme.TEXT_DARK);
+        subtitleLabel.setForeground(UITheme.TEXT_MUTED);
+        userIDLabel.setForeground(UITheme.TEXT_DARK);
+        passwordLabel.setForeground(UITheme.TEXT_DARK);
+        passwordLabel.setEnabled(true);
 
-        // White card with subtle 1px border + inner padding
-        cardPanel.setBackground(Color.WHITE);
-        cardPanel.setBorder(new CompoundBorder(
-                new LineBorder(cardBorder, 1, true),
-                new EmptyBorder(24, 28, 24, 28)
-        ));
+        UITheme.styleInput(textField1);
+        UITheme.styleInput(passwordField1);
 
-        titleLabel.setForeground(textDark);
-        subtitleLabel.setForeground(textMuted);
-        userIDLabel.setForeground(textDark);
-        passwordLabel.setForeground(textDark);
-
-        // Input fields with inner text padding so text doesn't touch the border test
-        CompoundBorder inputBorder = new CompoundBorder(
-                new LineBorder(cardBorder, 1),
-                new EmptyBorder(6, 10, 6, 10)
-        );
-        Font inputFont = new Font("Segoe UI", Font.PLAIN, 13);
-        textField1.setFont(inputFont);
-        textField1.setBorder(inputBorder);
-        passwordField1.setFont(inputFont);
-        passwordField1.setBorder(inputBorder);
-
-
-        // Primary Login button (Royal Blue)
-        styleButton(loginButton, primaryBlue, Color.WHITE, false);
-
-        // Secondary Register button (Clean Outlined)
-        styleButton(registerButton, Color.WHITE, textDark, true);
-        registerButton.setBorder(new LineBorder(cardBorder, 1));
+        UITheme.stylePrimaryButton(loginButton);
+        UITheme.styleSecondaryButton(registerButton);
     }
 
-    private void styleButton(JButton btn, Color bg, Color fg, boolean bordered){
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        btn.setBackground(bg);
-        btn.setForeground(fg);
-        btn.setFocusPainted(false);
-        btn.setOpaque(true);
-        btn.setBorderPainted(bordered);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    }
     private void loadDummyUsers() { //temporary for demo sake
         MembershipPlan goldPlan = new MembershipPlan(1, "Gold", 1500.0, 1, "Full gym + classes");
         users.add(new Admin("25-1824-135", "System Admin", "admin@gym.com", "admin123", 101));
         users.add(new Trainer("25-1231-123", "Coach Alex", "trainer@gym.com", "train123", 201, "Strength", "MWF 8AM-5PM"));
-        users.add(new Member("25-1231-123", "Juan Dela Cruz", "member@gym.com", "mem123", 1001, goldPlan, LocalDate.now(), "Active"));
+        users.add(new Member("25-1234-567", "Juan Dela Cruz", "member@gym.com", "mem123", 1001, goldPlan, LocalDate.now(), "Active"));
     }
 
     private void handleLogin() {
@@ -139,17 +109,18 @@ public class LoginForm extends JFrame {
         }
 
         // Open the dashboard matching the User subclass
-      //  if (matchedUser instanceof Member member) {
-      //      new MemberDashboard(member).setVisible(true);
-//        } else if (matchedUser instanceof Trainer trainer) {
-//            new TrainerDashboard(trainer).setVisible(true);
-//        } else if (matchedUser instanceof Admin admin) {
-//            new AdminDashboard(admin).setVisible(true);
-//        }
+        if (matchedUser instanceof Member member) {
+            new MemberDashboard(member).setVisible(true);
+        } else if (matchedUser instanceof Trainer trainer) {
+            new TrainerDashboard(trainer).setVisible(true);
+        } else if (matchedUser instanceof Admin admin) {
+            new AdminDashboard(admin).setVisible(true);
+        }
         dispose();
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new LoginForm().setVisible(true));
     }
+
 }

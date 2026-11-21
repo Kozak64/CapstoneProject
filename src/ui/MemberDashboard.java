@@ -2,7 +2,11 @@ package ui;
 
 import models.Member;
 import javax.swing.*;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.StyleContext;
+import java.awt.*;
+import java.util.Locale;
 
 public class MemberDashboard extends JFrame {
     private JPanel mainPanel;
@@ -33,13 +37,46 @@ public class MemberDashboard extends JFrame {
 
         setContentPane(mainPanel);
         setTitle("Gym Membership System - Member Dashboard");
-        setSize(680, 480);
+        setSize(860, 560);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
+        applyTheme();
         populateMemberHeader();
         setupTablesAndCombos();
         setupListeners();
+    }
+
+    private void applyTheme() {
+        mainPanel.setBackground(UITheme.BG_GRAY);
+        mainPanel.setBorder(new javax.swing.border.EmptyBorder(16, 20, 16, 20));
+
+        lblDashboardTitle.setFont(UITheme.FONT_TITLE);
+        lblDashboardTitle.setForeground(UITheme.TEXT_DARK);
+
+        lblPlanInfo.setFont(UITheme.FONT_SUBTITLE);
+        lblPlanInfo.setForeground(UITheme.TEXT_MUTED);
+
+        lblPlanPrice.setFont(UITheme.FONT_BOLD);
+        lblPlanPrice.setForeground(UITheme.PRIMARY_BLUE);
+
+        UITheme.styleTabbedPane(tabbedPane);
+        tabBookSession.setBackground(Color.WHITE);
+        tabRenewPlan.setBackground(Color.WHITE);
+        tabAttendance.setBackground(Color.WHITE);
+
+        UITheme.styleTable(tblSessions);
+        UITheme.styleTable(tblAttendance);
+
+        cmbPlans.setFont(UITheme.FONT_BODY);
+        cmbPlans.setBackground(Color.WHITE);
+        cmbPaymentMethod.setFont(UITheme.FONT_BODY);
+        cmbPaymentMethod.setBackground(Color.WHITE);
+
+        UITheme.stylePrimaryButton(btnBookSession);
+        UITheme.styleDangerButton(btnCancelSession);
+        UITheme.stylePrimaryButton(btnRenewPay);
+        UITheme.styleSecondaryButton(btnLogout);
     }
 
     public MemberDashboard() {
@@ -170,4 +207,5 @@ public class MemberDashboard extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new MemberDashboard().setVisible(true));
     }
+
 }
