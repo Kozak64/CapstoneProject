@@ -37,18 +37,20 @@ public class RegisterForm extends JFrame {
 
         applyTheme();
 
+        if (CustomIDLabel != null) CustomIDLabel.setVisible(false);
+        if (CustomIDTF != null) CustomIDTF.setVisible(false);
+
         registerButton.addActionListener(e -> handleRegistration());
     }
 
     private void handleRegistration() {
         String name = nameTextField.getText().trim();
         String email = emailTextField.getText().trim();
-        String userID = CustomIDTF.getText().trim();
 
         String password = new String(passwordTextField.getPassword());
         String confirmPassword = new String(confirmTextField.getPassword());
 
-        if (name.isEmpty() || email.isEmpty() || userID.isEmpty()
+        if (name.isEmpty() || email.isEmpty()
                 || password.isEmpty() || confirmPassword.isEmpty()) {
 
             JOptionPane.showMessageDialog(this,
@@ -68,12 +70,6 @@ public class RegisterForm extends JFrame {
             return;
         }
 
-        if (!userID.matches("\\d{2}-\\d{4}-\\d{3}")) {
-            JOptionPane.showMessageDialog(this,
-                    "User ID must follow XX-XXXX-XXX format.", "Invalid User ID", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
         if (password.length() < 4) {
             JOptionPane.showMessageDialog(this,
                     "Password must be at least 4 characters.", "Invalid Password", JOptionPane.WARNING_MESSAGE);
@@ -87,11 +83,17 @@ public class RegisterForm extends JFrame {
         }
 
         try {
-            Member newMember = manager.registerMember(
-                    userID, name, email, password
-            );
+            Member newMember = manager.registerMember(name, email, password);
 
-            JOptionPane.showMessageDialog(this, "Registration successful!\n\n" + "Name: " + newMember.getName() + "\nUser ID: " + newMember.getUserID() + "\n\nYou can now log in.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Registration successful!\n\n"
+                            + "Name: " + newMember.getName() + "\n"
+                            + "Your Generated User ID: " + newMember.getUserID() + "\n\n"
+                            + "Please save this User ID to log in.",
+                    "Registration Complete",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
             new LoginForm().setVisible(true);
             dispose();
 

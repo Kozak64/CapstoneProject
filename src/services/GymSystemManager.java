@@ -5,14 +5,18 @@ import models.*;
 import exceptions.*;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GymSystemManager {
 
     private static final GymSystemManager instance = new GymSystemManager();
 
     private final List<User> users = new ArrayList<>();
+    private final Random random = new Random();
+    private int idCounter = 1;
     private int membershipCounter = 1001;
 
     private GymSystemManager() {
@@ -33,18 +37,24 @@ public class GymSystemManager {
         ));
     }
 
-    // Register a new Member
-    public Member registerMember(String userID, String name, String email, String password) throws DuplicateUserException {
-        for (User user : users) {
-            if (user.getUserID().equalsIgnoreCase(userID)) {
-                throw new DuplicateUserException("User ID already exists.");
-            }
+    public String generateUserID() {
+        String id;
+        do {
+            String year = String.format("%02d", Year.now().getValue() % 100);
+            String seq = String.format("%04d", idCounter++);
+            String rand = String.format("%03d", random.nextInt(1000));
+            id = year + "-" + seq + "-" + rand;
+        } while (userIDExists(id));
+        return id;
+    }
 
-            if (user.getEmail().equalsIgnoreCase(email)) {
-                throw new DuplicateUserException("Email already registered.");
-            }
+    // Register a new Member with auto-generated User ID
+    public Member registerMember(String name, String email, String password) throws DuplicateUserException {
+        if (emailExists(email)) {
+            throw new DuplicateUserException("Email already registered.");
         }
 
+        String userID = generateUserID();
         Member newMember = new Member(
                 userID, name, email, password, membershipCounter++, null, LocalDate.now(), "Inactive"
         );
