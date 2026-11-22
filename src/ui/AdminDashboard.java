@@ -8,7 +8,10 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class AdminDashboard extends JFrame {
@@ -168,12 +171,17 @@ public class AdminDashboard extends JFrame {
         UITheme.styleSecondaryButton(btnEditSchedule);
         btnEditSchedule.addActionListener(e -> editTrainerSchedule());
 
+        JButton btnCreateSession = new JButton("Create Session");
+        UITheme.styleSecondaryButton(btnCreateSession);
+        btnCreateSession.addActionListener(e -> handleCreateSession());
+
         JButton btnAdd = new JButton("Add Trainer");
         UITheme.stylePrimaryButton(btnAdd);
         btnAdd.addActionListener(e -> handleAddTrainer());
 
         actions.add(btnRemove);
         actions.add(btnEditSchedule);
+        actions.add(btnCreateSession);
         actions.add(btnAdd);
         panel.add(actions, BorderLayout.SOUTH);
 
@@ -365,7 +373,9 @@ public class AdminDashboard extends JFrame {
             String id = manager.generateUserID();
             manager.addMember(id, name.trim(), email.trim(), "pass123", plan, "Active");
             reloadAll();
-            JOptionPane.showMessageDialog(this, "Member registered successfully!");
+            JOptionPane.showMessageDialog(this,
+                    "Member registered successfully!\n\nUser ID: " + id + "\nDefault Password: " + "pass123",
+                    "Member Added", JOptionPane.INFORMATION_MESSAGE);
         } catch (DuplicateUserException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Duplicate Email Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -391,17 +401,59 @@ public class AdminDashboard extends JFrame {
     private void handleAddTrainer() {
         String name = JOptionPane.showInputDialog(this, "Trainer Full Name:");
         if (name == null || name.trim().isEmpty()) return;
+        String defaultEmail = name.trim().toLowerCase().replaceAll("\\s+", ".") + "@gym.com";
+        String email = JOptionPane.showInputDialog(this, "Trainer Email:", defaultEmail);
+        if (email == null || email.trim().isEmpty()) return;
         String spec = JOptionPane.showInputDialog(this, "Specialization:", "General Fitness");
         if (spec == null || spec.trim().isEmpty()) return;
 
-        String email = name.toLowerCase().replaceAll("\\s+", ".") + "@gym.com";
-
         try {
             String id = manager.generateUserID();
-            manager.addTrainer(id, name.trim(), email, "train123", spec.trim(), "MWF 9AM-5PM");
+            manager.addTrainer(id, name.trim(), email.trim(), "train123", spec.trim(), "MWF 9AM-5PM");
             reloadAll();
-        } catch (DuplicateUserException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Trainer added successfully!\n\nUser ID: " + id + "\nEmail: " + email.trim() + "\nDefault Password: " + "train123",
+                    "Trainer Added", JOptionPane.INFORMATION_MESSAGE);
+        } catch (DuplicateUserException | IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void handleCreateSession() {
+        if (!requireSelection(tblTrainers, "trainer")) return;
+        String trainerUserID = trainersModel.getValueAt(tblTrainers.getSelectedRow(), 0).toString();
+        User u = manager.findUserById(trainerUserID);
+        if (!(u instanceof Trainer trainer)) return;
+
+        JTextField tfType = new JTextField(trainer.getSpecialization());
+        JTextField tfDate = new JTextField(LocalDate.now().plusDays(1).atTime(9, 0).format(DATE_TIME_FMT));
+        JTextField tfCap = new JTextField("15");
+
+        JPanel form = new JPanel(new GridLayout(0, 2, 8, 6));
+        form.add(new JLabel("Trainer:")); form.add(new JLabel(trainer.getName()));
+        form.add(new JLabel("Session Type:")); form.add(tfType);
+        form.add(new JLabel("Date & Time (yyyy-MM-dd HH:mm):")); form.add(tfDate);
+        form.add(new JLabel("Max Capacity:")); form.add(tfCap);
+
+        int result = JOptionPane.showConfirmDialog(this, form, "Create Training Session",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (result != JOptionPane.OK_OPTION) return;
+
+        try {
+            LocalDateTime dateTime = LocalDateTime.parse(tfDate.getText().trim(), DATE_TIME_FMT);
+            int capacity = Integer.parseInt(tfCap.getText().trim());
+            String type = tfType.getText().trim();
+            if (type.isEmpty()) throw new IllegalArgumentException("Session type cannot be empty.");
+
+            Session created = manager.createSession(trainer, dateTime, type, capacity);
+            JOptionPane.showMessageDialog(this,
+                    "Created session SES-" + created.getSessionID() + " for " + trainer.getName() + ".",
+                    "Session Created", JOptionPane.INFORMATION_MESSAGE);
+        } catch (DateTimeParseException ex) {
+            JOptionPane.showMessageDialog(this, "Use date format yyyy-MM-dd HH:mm (e.g. 2026-11-23 09:00).",
+                    "Invalid Date", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Invalid Input", JOptionPane.ERROR_MESSAGE);
         }
     }
 
