@@ -277,23 +277,36 @@ public class MemberDashboard extends JFrame {
 
             MembershipPlan selectedPlan = availablePlans.get(selectedIndex);
 
+            JTextField tfAmount = new JTextField(String.format("%.2f", selectedPlan.getPrice()));
+            UITheme.styleInput(tfAmount);
+
+            JPanel confirmPanel = new JPanel(new GridLayout(0, 2, 8, 6));
+            confirmPanel.add(new JLabel("Plan:"));
+            confirmPanel.add(new JLabel(selectedPlan.getPlanName()));
+            confirmPanel.add(new JLabel("Required Price:"));
+            confirmPanel.add(new JLabel(String.format("PHP %.2f", selectedPlan.getPrice())));
+            confirmPanel.add(new JLabel("Duration:"));
+            confirmPanel.add(new JLabel(selectedPlan.getDurationMonths() + " month(s)"));
+            confirmPanel.add(new JLabel("Payment Method:"));
+            confirmPanel.add(new JLabel(method));
+            confirmPanel.add(new JLabel("Amount Paid (PHP):"));
+            confirmPanel.add(tfAmount);
+
             int confirm = JOptionPane.showConfirmDialog(
                     this,
-                    "Confirm Membership Payment?\n\n"
-                            + "Plan: " + selectedPlan.getPlanName() + "\n"
-                            + "Price: PHP " + String.format("%.2f", selectedPlan.getPrice()) + "\n"
-                            + "Duration: " + selectedPlan.getDurationMonths() + " month(s)\n"
-                            + "Payment Method: " + method,
+                    confirmPanel,
                     "Confirm Payment",
-                    JOptionPane.YES_NO_OPTION
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE
             );
 
-            if (confirm != JOptionPane.YES_OPTION) {
+            if (confirm != JOptionPane.OK_OPTION) {
                 return;
             }
 
             try {
-                Payment payment = manager.processPayment(currentMember, selectedPlan, method);
+                double amountPaid = Double.parseDouble(tfAmount.getText().trim());
+                Payment payment = manager.processPayment(currentMember, selectedPlan, method, amountPaid);
                 refreshAll();
 
                 JOptionPane.showMessageDialog(
@@ -310,6 +323,10 @@ public class MemberDashboard extends JFrame {
                                 + "Status: " + currentMember.getStatus(),
                         "Payment Successful",
                         JOptionPane.INFORMATION_MESSAGE
+                );
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(
+                        this, "Please enter a valid numeric payment amount.", "Payment Failed", JOptionPane.ERROR_MESSAGE
                 );
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(

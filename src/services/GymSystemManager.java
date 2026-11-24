@@ -284,9 +284,23 @@ public class GymSystemManager {
         FileStorageService.saveSessions(sessions);
     }
 
-    public Payment processPayment(Member member, MembershipPlan plan, String method) {
-        Payment payment = new Payment(paymentIdCounter++, member, plan, plan.getPrice(), method);
-        payment.processPayment();
+    public Payment processPayment(Member member, MembershipPlan plan, String method) throws InvalidPaymentException {
+        return processPayment(member, plan, method, plan.getPrice());
+    }
+
+    public Payment processPayment(Member member, MembershipPlan plan, String method, double amount)
+            throws InvalidPaymentException {
+        if (amount <= 0) {
+            throw new InvalidPaymentException("Payment amount must be greater than 0.");
+        }
+        Payment payment = new Payment(paymentIdCounter++, member, plan, amount, method);
+        try {
+            payment.processPayment();
+        } catch (InvalidPaymentException ex) {
+            payments.add(payment);
+            FileStorageService.savePayments(payments);
+            throw ex;
+        }
         payments.add(payment);
         FileStorageService.savePayments(payments);
         FileStorageService.saveUsers(users);

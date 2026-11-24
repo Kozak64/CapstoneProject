@@ -1,5 +1,6 @@
 package models;
 
+import exceptions.InvalidPaymentException;
 import java.time.LocalDate;
 
 public class Payment implements PaymentProcess {
@@ -41,10 +42,14 @@ public class Payment implements PaymentProcess {
     }
 
     @Override
-    public void processPayment() {
+    public void processPayment() throws InvalidPaymentException {
         if (plan != null && amount < plan.getPrice()) {
             this.status = "Failed";
-            throw new IllegalArgumentException("Insufficient payment for plan: " + plan.getPlanName());
+            throw new InvalidPaymentException(
+                    "Insufficient payment for " + plan.getPlanName()
+                            + " (Required: PHP " + String.format("%.2f", plan.getPrice())
+                            + ", Paid: PHP " + String.format("%.2f", amount) + ")."
+            );
         }
         this.status = "Completed";
         if (member != null && plan != null) {
