@@ -43,10 +43,7 @@ public class TrainerDashboard extends JFrame {
         this.currentTrainer = trainer;
 
         setContentPane(mainPanel);
-        setTitle("Gym Membership System - Trainer Dashboard");
-        setSize(860, 560);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        UITheme.configureWindow(this, "Hussle Fitness - Trainer Dashboard");
 
         applyTheme();
         populateHeader();
@@ -182,12 +179,12 @@ public class TrainerDashboard extends JFrame {
     private void handleUpdateSchedule() {
         int row = Sessiontabel.getSelectedRow();
         if (row == -1 || row >= displayedSessions.size()) {
-            JOptionPane.showMessageDialog(this, "Please select a session first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+            UITheme.showMessageDialog(this, "Please select a session first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
             return;
         }
         Session session = displayedSessions.get(row);
         String current = session.getSessionDate() != null ? session.getSessionDate().format(DATE_TIME_FMT) : "";
-        String updated = JOptionPane.showInputDialog(this, "Enter new schedule date/time (yyyy-MM-dd HH:mm):", current);
+        String updated = UITheme.showInputDialog(this, "Enter new schedule date/time (yyyy-MM-dd HH:mm):", current);
         if (updated == null || updated.trim().isEmpty()) {
             return;
         }
@@ -195,20 +192,20 @@ public class TrainerDashboard extends JFrame {
             LocalDateTime newDate = LocalDateTime.parse(updated.trim(), DATE_TIME_FMT);
             manager.updateSessionDate(session.getSessionID(), newDate);
             refreshSessions();
-            JOptionPane.showMessageDialog(this, "Session schedule updated.", "Updated", JOptionPane.INFORMATION_MESSAGE);
+            UITheme.showMessageDialog(this, "Session schedule updated.", "Updated", JOptionPane.INFORMATION_MESSAGE);
         } catch (DateTimeParseException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid format. Use yyyy-MM-dd HH:mm (e.g. 2026-11-23 09:00).", "Invalid Date", JOptionPane.ERROR_MESSAGE);
+            UITheme.showMessageDialog(this, "Invalid format. Use yyyy-MM-dd HH:mm (e.g. 2026-11-23 09:00).", "Invalid Date", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void handleCancelSession() {
         int row = Sessiontabel.getSelectedRow();
         if (row == -1 || row >= displayedSessions.size()) {
-            JOptionPane.showMessageDialog(this, "Please select a session to cancel.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+            UITheme.showMessageDialog(this, "Please select a session to cancel.", "Selection Required", JOptionPane.WARNING_MESSAGE);
             return;
         }
         Session session = displayedSessions.get(row);
-        int confirm = JOptionPane.showConfirmDialog(this, "Cancel session SES-" + session.getSessionID() + "?", "Confirm Cancel", JOptionPane.YES_NO_OPTION);
+        int confirm = UITheme.showConfirmDialog(this, "Cancel session SES-" + session.getSessionID() + "?", "Confirm Cancel", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             manager.cancelSession(session.getSessionID());
             refreshSessions();
@@ -218,12 +215,12 @@ public class TrainerDashboard extends JFrame {
     private void handleMarkAttendance(boolean present) {
         int sessionIdx = cmSessionFilter.getSelectedIndex();
         if (sessionIdx < 0 || sessionIdx >= displayedSessions.size()) {
-            JOptionPane.showMessageDialog(this, "Please select a session first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+            UITheme.showMessageDialog(this, "Please select a session first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
             return;
         }
         int row = AttendanceTabel.getSelectedRow();
         if (row == -1 || row >= displayedAttendanceMembers.size()) {
-            JOptionPane.showMessageDialog(this, "Please select a member first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+            UITheme.showMessageDialog(this, "Please select a member first.", "Selection Required", JOptionPane.WARNING_MESSAGE);
             return;
         }
         Session session = displayedSessions.get(sessionIdx);
@@ -233,10 +230,9 @@ public class TrainerDashboard extends JFrame {
     }
 
     private void handleLogout() {
-        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to logout?", "Confirm Logout", JOptionPane.YES_NO_OPTION);
+        int confirm = UITheme.showConfirmDialog(this, "Are you sure you want to logout?", "Confirm Logout", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            dispose();
-            new LoginForm().setVisible(true);
+            UITheme.switchFrame(this, new LoginForm());
         }
     }
 

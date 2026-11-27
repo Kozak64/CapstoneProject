@@ -1,167 +1,252 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="ui.RegisterForm">
-  <grid id="27dc6" binding="RegisterPanel" layout-manager="GridLayoutManager" row-count="3" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-    <margin top="2" left="2" bottom="2" right="2"/>
+  <grid id="27dc6" binding="RegisterPanel" custom-create="true" layout-manager="GridLayoutManager" row-count="4" column-count="8" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+    <margin top="24" left="36" bottom="24" right="36"/>
     <constraints>
-      <xy x="20" y="20" width="500" height="409"/>
+      <xy x="20" y="20" width="1280" height="720"/>
     </constraints>
     <properties>
-      <background color="-920071"/>
-      <minimumSize width="388" height="368"/>
-      <preferredSize width="388" height="368"/>
+      <background color="-16118249"/>
     </properties>
     <border type="none"/>
     <children>
-      <grid id="18062" binding="cardPanel" layout-manager="GridLayoutManager" row-count="13" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="24" left="28" bottom="24" right="28"/>
+      <component id="r1001" class="javax.swing.JLabel" binding="logoLabel" custom-create="true">
         <constraints>
-          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="8" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-1"/>
+          <text value=""/>
         </properties>
-        <border type="line">
-          <color color="-3418655"/>
-        </border>
+      </component>
+      <vspacer id="d3ee2">
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <hspacer id="71afd">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
+      <grid id="18062" binding="cardPanel" custom-create="true" layout-manager="GridLayoutManager" row-count="17" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="4">
+        <margin top="24" left="32" bottom="22" right="32"/>
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <minimum-size width="390" height="-1"/>
+            <preferred-size width="424" height="-1"/>
+            <maximum-size width="450" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <opaque value="false"/>
+        </properties>
+        <border type="none"/>
         <children>
-          <component id="cde13" class="javax.swing.JLabel" binding="titleLabel">
+          <component id="r1002" class="javax.swing.JLabel" binding="brandLabel">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <font name="Segoe UI" size="18" style="1"/>
-              <text value="Register Form"/>
+              <font name="Segoe UI" size="24" style="3"/>
+              <horizontalAlignment value="0"/>
+              <opaque value="false"/>
+              <text value="&lt;html&gt;&lt;div style='padding:0 6px;'&gt;&lt;font color='#0A84FF'&gt;HUSSLE&lt;/font&gt; &lt;font color='#FFD21F'&gt;FITNESS&lt;/font&gt;&lt;/div&gt;&lt;/html&gt;"/>
             </properties>
           </component>
-          <component id="d3763" class="javax.swing.JLabel" binding="subtitleLabel">
+          <component id="cde13" class="javax.swing.JLabel" binding="titleLabel">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <font name="Segoe UI" size="11" style="0"/>
-              <foreground color="-10193781"/>
-              <text value="Creater new account"/>
+              <font name="Segoe UI" size="12" style="1"/>
+              <foreground color="-1"/>
+              <horizontalAlignment value="0"/>
+              <opaque value="false"/>
+              <text value="GYM MEMBERSHIP SYSTEM"/>
             </properties>
           </component>
-          <component id="b3f40" class="javax.swing.JLabel" binding="userIDLabel">
+          <component id="d3763" class="javax.swing.JLabel" binding="subtitleLabel">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <font name="Segoe UI" size="12" style="0"/>
-              <text value="Enter Full Name"/>
+              <font name="Segoe UI" size="11" style="0"/>
+              <foreground color="-7035976"/>
+              <horizontalAlignment value="0"/>
+              <opaque value="false"/>
+              <text value="Create your member account"/>
             </properties>
           </component>
-          <component id="c857e" class="javax.swing.JLabel" binding="emailLabel">
+          <vspacer id="r1003">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+                <minimum-size width="-1" height="8"/>
+                <preferred-size width="-1" height="8"/>
+                <maximum-size width="-1" height="8"/>
+              </grid>
+            </constraints>
+          </vspacer>
+          <component id="b3f40" class="javax.swing.JLabel" binding="userIDLabel">
             <constraints>
               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <font name="Segoe UI" size="12" style="0"/>
-              <text value="Enter Email"/>
+              <font name="Segoe UI" size="11" style="1"/>
+              <foreground color="-1906448"/>
+              <opaque value="false"/>
+              <text value="Full Name"/>
             </properties>
           </component>
-          <component id="c6e41" class="javax.swing.JLabel" binding="passwordLabel">
-            <constraints>
-              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <font name="Segoe UI" size="12" style="0"/>
-              <text value="Enter Password"/>
-            </properties>
-          </component>
-          <component id="315d4" class="javax.swing.JLabel" binding="confirmLabel">
-            <constraints>
-              <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <font name="Segoe UI" size="12" style="0"/>
-              <text value="Confirm Password"/>
-            </properties>
-          </component>
-          <component id="90483" class="javax.swing.JButton" binding="registerButton" default-binding="true">
-            <constraints>
-              <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="280" height="38"/>
-              </grid>
-            </constraints>
-            <properties>
-              <background color="-14326805"/>
-              <borderPainted value="false"/>
-              <contentAreaFilled value="true"/>
-              <foreground color="-1"/>
-              <text value="Register"/>
-            </properties>
-          </component>
-          <component id="e64dc" class="javax.swing.JTextField" binding="nameTextField">
-            <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="280" height="36"/>
-              </grid>
-            </constraints>
-            <properties/>
-          </component>
-          <component id="449ef" class="javax.swing.JTextField" binding="emailTextField">
+          <component id="e64dc" class="javax.swing.JTextField" binding="nameTextField" custom-create="true">
             <constraints>
               <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="280" height="36"/>
+                <preferred-size width="340" height="38"/>
               </grid>
             </constraints>
             <properties/>
           </component>
-          <component id="add56" class="javax.swing.JPasswordField" binding="confirmTextField">
+          <component id="c857e" class="javax.swing.JLabel" binding="emailLabel">
             <constraints>
-              <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="280" height="36"/>
-              </grid>
+              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
-            <properties/>
+            <properties>
+              <font name="Segoe UI" size="11" style="1"/>
+              <foreground color="-1906448"/>
+              <opaque value="false"/>
+              <text value="Email Address"/>
+            </properties>
           </component>
-          <component id="a58c1" class="javax.swing.JPasswordField" binding="passwordTextField">
+          <component id="449ef" class="javax.swing.JTextField" binding="emailTextField" custom-create="true">
             <constraints>
-              <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="280" height="36"/>
+              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="340" height="38"/>
               </grid>
             </constraints>
             <properties/>
           </component>
           <component id="a69ad" class="javax.swing.JLabel" binding="CustomIDLabel">
             <constraints>
-              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <font name="Segoe UI" size="12" style="0"/>
+              <font name="Segoe UI" size="11" style="1"/>
+              <foreground color="-1906448"/>
+              <opaque value="false"/>
               <text value="Enter ID (xx-xxxx-xxx)"/>
             </properties>
           </component>
-          <component id="7bd01" class="javax.swing.JTextField" binding="CustomIDTF">
+          <component id="7bd01" class="javax.swing.JTextField" binding="CustomIDTF" custom-create="true">
             <constraints>
-              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="280" height="36"/>
+              <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="340" height="38"/>
               </grid>
             </constraints>
             <properties/>
+          </component>
+          <component id="c6e41" class="javax.swing.JLabel" binding="passwordLabel">
+            <constraints>
+              <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font name="Segoe UI" size="11" style="1"/>
+              <foreground color="-1906448"/>
+              <opaque value="false"/>
+              <text value="Password"/>
+            </properties>
+          </component>
+          <component id="a58c1" class="javax.swing.JPasswordField" binding="passwordTextField" custom-create="true">
+            <constraints>
+              <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="340" height="38"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="315d4" class="javax.swing.JLabel" binding="confirmLabel">
+            <constraints>
+              <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font name="Segoe UI" size="11" style="1"/>
+              <foreground color="-1906448"/>
+              <opaque value="false"/>
+              <text value="Confirm Password"/>
+            </properties>
+          </component>
+          <component id="add56" class="javax.swing.JPasswordField" binding="confirmTextField" custom-create="true">
+            <constraints>
+              <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="340" height="38"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <vspacer id="r1004">
+            <constraints>
+              <grid row="14" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+                <minimum-size width="-1" height="8"/>
+                <preferred-size width="-1" height="8"/>
+                <maximum-size width="-1" height="8"/>
+              </grid>
+            </constraints>
+          </vspacer>
+          <component id="90483" class="javax.swing.JButton" binding="registerButton" custom-create="true" default-binding="true">
+            <constraints>
+              <grid row="15" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="340" height="44"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="CREATE ACCOUNT →"/>
+            </properties>
+          </component>
+          <component id="r1005" class="javax.swing.JLabel" binding="footerLabel">
+            <constraints>
+              <grid row="16" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font name="Segoe UI" size="10" style="2"/>
+              <foreground color="-10193781"/>
+              <horizontalAlignment value="0"/>
+              <opaque value="false"/>
+              <text value="&lt;html&gt;&lt;div style='text-align:center; padding-top:6px;'&gt;In this town, everybody goes out partying except us.&lt;br&gt;Huss. Huss. Huss.&lt;/div&gt;&lt;/html&gt;"/>
+            </properties>
           </component>
         </children>
       </grid>
       <hspacer id="4809e">
         <constraints>
-          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
       </hspacer>
-      <hspacer id="71afd">
+      <hspacer id="4809f">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
       </hspacer>
-      <vspacer id="d3ee2">
+      <hspacer id="480a0">
         <constraints>
-          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
-      </vspacer>
+      </hspacer>
+      <hspacer id="480a1">
+        <constraints>
+          <grid row="2" column="5" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
+      <hspacer id="480a2">
+        <constraints>
+          <grid row="2" column="6" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
+      <hspacer id="480a3">
+        <constraints>
+          <grid row="2" column="7" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
       <vspacer id="f2449">
         <constraints>
-          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
     </children>
