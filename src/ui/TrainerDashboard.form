@@ -5,7 +5,9 @@
     <constraints>
       <xy x="20" y="20" width="500" height="428"/>
     </constraints>
-    <properties/>
+    <properties>
+      <background color="-16118249"/>
+    </properties>
     <border type="none"/>
     <children>
       <component id="d335c" class="javax.swing.JLabel" binding="DashboardTitle">
@@ -14,6 +16,7 @@
         </constraints>
         <properties>
           <font size="16" style="1"/>
+          <foreground color="-1"/>
           <text value="Trainer Dashboard"/>
         </properties>
       </component>
@@ -23,6 +26,7 @@
         </constraints>
         <properties>
           <font size="12"/>
+          <foreground color="-7037256"/>
           <text value="Label"/>
         </properties>
       </component>
@@ -40,7 +44,9 @@
             <constraints>
               <tabbedpane title="My Session"/>
             </constraints>
-            <properties/>
+            <properties>
+              <background color="-15854299"/>
+            </properties>
             <border type="none"/>
             <children>
               <scrollpane id="4c6a7">
@@ -79,7 +85,9 @@
             <constraints>
               <tabbedpane title="Mark Attendance"/>
             </constraints>
-            <properties/>
+            <properties>
+              <background color="-15854299"/>
+            </properties>
             <border type="none"/>
             <children>
               <component id="76962" class="javax.swing.JComboBox" binding="cmSessionFilter">

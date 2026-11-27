@@ -84,9 +84,20 @@ public class RegisterForm extends JFrame {
             return;
         }
 
-        if (password.length() < 4) {
+        String domain = email.substring(email.indexOf('@') + 1).toLowerCase();
+        java.util.Set<String> allowedDomains = java.util.Set.of(
+                "gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "icloud.com", "cit.edu"
+        );
+        if (!allowedDomains.contains(domain)) {
             UITheme.showMessageDialog(this,
-                    "Password must be at least 4 characters.", "Invalid Password", JOptionPane.WARNING_MESSAGE);
+                    "Please use a supported email handle (e.g., @gmail.com, @yahoo.com, @outlook.com, @hotmail.com, @icloud.com, @cit.edu).",
+                    "Invalid Email Domain", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (password.length() < 8) {
+            UITheme.showMessageDialog(this,
+                    "Password invalid. Password should be 8 characters long", "Invalid Password", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
