@@ -294,12 +294,15 @@ public class GymSystemManager {
             throw new InvalidPaymentException("Payment amount must be greater than 0.");
         }
         Payment payment = new Payment(paymentIdCounter++, member, plan, amount, method);
+        PaymentProcess decoratedPayment = new ReceiptAuditDecorator(payment);
         try {
-            payment.processPayment();
+            decoratedPayment.processPayment();
         } catch (InvalidPaymentException ex) {
             payments.add(payment);
             FileStorageService.savePayments(payments);
             throw ex;
+        } catch (Exception ex) {
+            throw new InvalidPaymentException(ex.getMessage());
         }
         payments.add(payment);
         FileStorageService.savePayments(payments);
