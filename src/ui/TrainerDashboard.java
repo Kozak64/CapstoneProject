@@ -57,27 +57,38 @@ public class TrainerDashboard extends JFrame {
     }
 
     private void applyTheme() {
-        mainPanel.setBackground(UITheme.BG_GRAY);
-        mainPanel.setBorder(new EmptyBorder(16, 20, 16, 20));
+        mainPanel.setBackground(UITheme.BG_NAVY);
+        mainPanel.setBorder(new EmptyBorder(18, 22, 18, 22));
 
         DashboardTitle.setFont(UITheme.FONT_TITLE);
-        DashboardTitle.setForeground(UITheme.TEXT_DARK);
+        DashboardTitle.setForeground(UITheme.TEXT_WHITE);
 
         Subtitle.setFont(UITheme.FONT_SUBTITLE);
-        Subtitle.setForeground(UITheme.TEXT_MUTED);
+        Subtitle.setForeground(UITheme.TEXT_SLATE);
 
-        UITheme.styleTabbedPane(tabbedPane1);
-        UITheme.styleTable(Sessiontabel);
-        UITheme.styleTable(AttendanceTabel);
+        UITheme.styleDarkTabbedPane(tabbedPane1);
+        for (int i = 0; i < tabbedPane1.getTabCount(); i++) {
+            Component comp = tabbedPane1.getComponentAt(i);
+            if (comp instanceof JComponent jc) {
+                jc.setBackground(UITheme.SURFACE_DARK);
+            }
+        }
 
-        cmSessionFilter.setFont(UITheme.FONT_BODY);
-        cmSessionFilter.setBackground(Color.WHITE);
+        UITheme.styleDarkComboBox(cmSessionFilter);
 
-        UITheme.stylePrimaryButton(updateScheduleButton);
-        UITheme.styleDangerButton(cancelSessionButton);
-        UITheme.stylePrimaryButton(markPresentButton);
-        UITheme.styleSecondaryButton(markAbsentButton);
-        UITheme.styleSecondaryButton(btnLogout);
+        UITheme.styleButton(updateScheduleButton, UITheme.ELECTRIC_BLUE, UITheme.TEXT_WHITE, false);
+        UITheme.styleButton(cancelSessionButton, UITheme.STATUS_RED, UITheme.TEXT_WHITE, false);
+        UITheme.styleButton(markPresentButton, UITheme.ELECTRIC_BLUE, UITheme.TEXT_WHITE, false);
+        UITheme.styleButton(markAbsentButton, UITheme.SURFACE_ALT, UITheme.TEXT_LIGHT, true);
+        markAbsentButton.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(UITheme.LOGOUT_BORDER, 1),
+                new EmptyBorder(6, 14, 6, 14)
+        ));
+        UITheme.styleButton(btnLogout, UITheme.SURFACE_ALT, UITheme.TEXT_LIGHT, true);
+        btnLogout.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(UITheme.LOGOUT_BORDER, 1),
+                new EmptyBorder(6, 14, 6, 14)
+        ));
     }
 
     private void populateHeader() {
@@ -102,6 +113,8 @@ public class TrainerDashboard extends JFrame {
             }
         };
         Sessiontabel.setModel(sessionsModel);
+        JScrollPane sessionScroll = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, Sessiontabel);
+        UITheme.styleDarkTable(Sessiontabel, sessionScroll, 4);
 
         attendanceModel = new DefaultTableModel(
                 new Object[]{"User ID", "Member Name", "Plan", "Attendance Status"}, 0
@@ -112,6 +125,8 @@ public class TrainerDashboard extends JFrame {
             }
         };
         AttendanceTabel.setModel(attendanceModel);
+        JScrollPane attendanceScroll = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, AttendanceTabel);
+        UITheme.styleDarkTable(AttendanceTabel, attendanceScroll, 3);
     }
 
     private void refreshSessions() {

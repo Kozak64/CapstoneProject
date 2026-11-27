@@ -52,27 +52,28 @@ public class AdminDashboard extends JFrame {
 
     private void initUI() {
         JPanel root = new JPanel(new BorderLayout(0, 16));
-        root.setBackground(UITheme.BG_GRAY);
+        root.setBackground(UITheme.BG_NAVY);
         root.setBorder(new EmptyBorder(16, 20, 16, 20));
 
-        JPanel headerCard = new JPanel(new BorderLayout(12, 4));
-        UITheme.styleCard(headerCard, 16, 20);
+        JPanel headerCard = new UITheme.DarkGlassCard();
+        headerCard.setLayout(new BorderLayout(12, 4));
+        headerCard.setBorder(new EmptyBorder(16, 20, 16, 20));
 
         JPanel titleBlock = new JPanel(new GridLayout(2, 1, 0, 4));
         titleBlock.setOpaque(false);
         lblTitle = new JLabel("Admin Control Panel");
         lblTitle.setFont(UITheme.FONT_TITLE);
-        lblTitle.setForeground(UITheme.TEXT_DARK);
+        lblTitle.setForeground(UITheme.TEXT_WHITE);
 
         lblSubtitle = new JLabel("System Overview");
         lblSubtitle.setFont(UITheme.FONT_SUBTITLE);
-        lblSubtitle.setForeground(UITheme.TEXT_MUTED);
+        lblSubtitle.setForeground(UITheme.TEXT_SLATE);
 
         titleBlock.add(lblTitle);
         titleBlock.add(lblSubtitle);
 
         JButton btnLogout = new JButton("Logout");
-        UITheme.styleSecondaryButton(btnLogout);
+        styleDarkSecondary(btnLogout);
         btnLogout.addActionListener(e -> handleLogout());
 
         JPanel logoutWrap = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
@@ -83,11 +84,12 @@ public class AdminDashboard extends JFrame {
         headerCard.add(logoutWrap, BorderLayout.EAST);
         root.add(headerCard, BorderLayout.NORTH);
 
-        JPanel bodyCard = new JPanel(new BorderLayout());
-        UITheme.styleCard(bodyCard, 12, 16);
+        JPanel bodyCard = new UITheme.DarkGlassCard();
+        bodyCard.setLayout(new BorderLayout());
+        bodyCard.setBorder(new EmptyBorder(12, 16, 12, 16));
 
         JTabbedPane tabbedPane = new JTabbedPane();
-        UITheme.styleTabbedPane(tabbedPane);
+        UITheme.styleDarkTabbedPane(tabbedPane);
         tabbedPane.addTab("Manage Members", createMembersTab());
         tabbedPane.addTab("Manage Trainers", createTrainersTab());
         tabbedPane.addTab("Membership Plans", createPlansTab());
@@ -97,6 +99,22 @@ public class AdminDashboard extends JFrame {
         root.add(bodyCard, BorderLayout.CENTER);
 
         setContentPane(root);
+    }
+
+    private void styleDarkPrimary(JButton btn) {
+        UITheme.styleButton(btn, UITheme.ELECTRIC_BLUE, UITheme.TEXT_WHITE, false);
+    }
+
+    private void styleDarkSecondary(JButton btn) {
+        UITheme.styleButton(btn, UITheme.SURFACE_ALT, UITheme.TEXT_LIGHT, true);
+        btn.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(UITheme.LOGOUT_BORDER, 1),
+                new EmptyBorder(6, 14, 6, 14)
+        ));
+    }
+
+    private void styleDarkDanger(JButton btn) {
+        UITheme.styleButton(btn, UITheme.STATUS_RED, UITheme.TEXT_WHITE, false);
     }
 
     private DefaultTableModel readOnlyModel(Object[] columns) {
@@ -110,30 +128,28 @@ public class AdminDashboard extends JFrame {
 
     private JPanel createMembersTab() {
         JPanel panel = new JPanel(new BorderLayout(0, 12));
-        panel.setBackground(Color.WHITE);
+        panel.setBackground(UITheme.SURFACE_DARK);
         panel.setBorder(new EmptyBorder(12, 8, 8, 8));
 
         membersModel = readOnlyModel(new Object[]{"User ID", "Name", "Email", "Plan", "Expiry Date", "Status"});
         tblMembers = new JTable(membersModel);
-        UITheme.styleTable(tblMembers);
-
         JScrollPane scrollPane = new JScrollPane(tblMembers);
-        scrollPane.getViewport().setBackground(Color.WHITE);
+        UITheme.styleDarkTable(tblMembers, scrollPane, 5);
         panel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         actions.setOpaque(false);
 
         JButton btnRemove = new JButton("Remove Member");
-        UITheme.styleDangerButton(btnRemove);
+        styleDarkDanger(btnRemove);
         btnRemove.addActionListener(e -> handleRemoveMember());
 
         JButton btnToggleStatus = new JButton("Toggle Active/Inactive");
-        UITheme.styleSecondaryButton(btnToggleStatus);
+        styleDarkSecondary(btnToggleStatus);
         btnToggleStatus.addActionListener(e -> toggleMemberStatus());
 
         JButton btnAdd = new JButton("Add Member");
-        UITheme.stylePrimaryButton(btnAdd);
+        styleDarkPrimary(btnAdd);
         btnAdd.addActionListener(e -> handleAddMember());
 
         actions.add(btnRemove);
@@ -146,34 +162,32 @@ public class AdminDashboard extends JFrame {
 
     private JPanel createTrainersTab() {
         JPanel panel = new JPanel(new BorderLayout(0, 12));
-        panel.setBackground(Color.WHITE);
+        panel.setBackground(UITheme.SURFACE_DARK);
         panel.setBorder(new EmptyBorder(12, 8, 8, 8));
 
         trainersModel = readOnlyModel(new Object[]{"User ID", "Trainer ID", "Name", "Specialization", "Schedule"});
         tblTrainers = new JTable(trainersModel);
-        UITheme.styleTable(tblTrainers);
-
         JScrollPane scrollPane = new JScrollPane(tblTrainers);
-        scrollPane.getViewport().setBackground(Color.WHITE);
+        UITheme.styleDarkTable(tblTrainers, scrollPane, -1);
         panel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         actions.setOpaque(false);
 
         JButton btnRemove = new JButton("Remove Trainer");
-        UITheme.styleDangerButton(btnRemove);
+        styleDarkDanger(btnRemove);
         btnRemove.addActionListener(e -> handleRemoveTrainer());
 
         JButton btnEditSchedule = new JButton("Edit Schedule");
-        UITheme.styleSecondaryButton(btnEditSchedule);
+        styleDarkSecondary(btnEditSchedule);
         btnEditSchedule.addActionListener(e -> editTrainerSchedule());
 
         JButton btnCreateSession = new JButton("Create Session");
-        UITheme.styleSecondaryButton(btnCreateSession);
+        styleDarkSecondary(btnCreateSession);
         btnCreateSession.addActionListener(e -> handleCreateSession());
 
         JButton btnAdd = new JButton("Add Trainer");
-        UITheme.stylePrimaryButton(btnAdd);
+        styleDarkPrimary(btnAdd);
         btnAdd.addActionListener(e -> handleAddTrainer());
 
         actions.add(btnRemove);
@@ -187,30 +201,28 @@ public class AdminDashboard extends JFrame {
 
     private JPanel createPlansTab() {
         JPanel panel = new JPanel(new BorderLayout(0, 12));
-        panel.setBackground(Color.WHITE);
+        panel.setBackground(UITheme.SURFACE_DARK);
         panel.setBorder(new EmptyBorder(12, 8, 8, 8));
 
         plansModel = readOnlyModel(new Object[]{"Plan ID", "Plan Name", "Price (PHP)", "Duration (Months)", "Description"});
         tblPlans = new JTable(plansModel);
-        UITheme.styleTable(tblPlans);
-
         JScrollPane scrollPane = new JScrollPane(tblPlans);
-        scrollPane.getViewport().setBackground(Color.WHITE);
+        UITheme.styleDarkTable(tblPlans, scrollPane, -1);
         panel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         actions.setOpaque(false);
 
         JButton btnDelete = new JButton("Delete Plan");
-        UITheme.styleDangerButton(btnDelete);
+        styleDarkDanger(btnDelete);
         btnDelete.addActionListener(e -> handleRemovePlan());
 
         JButton btnEditPrice = new JButton("Edit Price");
-        UITheme.styleSecondaryButton(btnEditPrice);
+        styleDarkSecondary(btnEditPrice);
         btnEditPrice.addActionListener(e -> editPlanPrice());
 
         JButton btnAdd = new JButton("Add Plan");
-        UITheme.stylePrimaryButton(btnAdd);
+        styleDarkPrimary(btnAdd);
         btnAdd.addActionListener(e -> handleAddPlan());
 
         actions.add(btnDelete);
@@ -223,27 +235,25 @@ public class AdminDashboard extends JFrame {
 
     private JPanel createPaymentsTab() {
         JPanel panel = new JPanel(new BorderLayout(0, 12));
-        panel.setBackground(Color.WHITE);
+        panel.setBackground(UITheme.SURFACE_DARK);
         panel.setBorder(new EmptyBorder(12, 8, 8, 8));
 
         lblReportSummary = new JLabel("Total Revenue: PHP 0.00");
         lblReportSummary.setFont(UITheme.FONT_BOLD);
-        lblReportSummary.setForeground(UITheme.PRIMARY_BLUE);
+        lblReportSummary.setForeground(UITheme.ACCENT_YELLOW);
         panel.add(lblReportSummary, BorderLayout.NORTH);
 
         paymentsModel = readOnlyModel(new Object[]{"Payment ID", "Member", "Plan", "Amount (PHP)", "Method", "Date", "Status"});
         tblPayments = new JTable(paymentsModel);
-        UITheme.styleTable(tblPayments);
-
         JScrollPane scrollPane = new JScrollPane(tblPayments);
-        scrollPane.getViewport().setBackground(Color.WHITE);
+        UITheme.styleDarkTable(tblPayments, scrollPane, 6);
         panel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         actions.setOpaque(false);
 
         JButton btnGenerateReport = new JButton("Generate Summary Report");
-        UITheme.stylePrimaryButton(btnGenerateReport);
+        styleDarkPrimary(btnGenerateReport);
         btnGenerateReport.addActionListener(e -> UITheme.showMessageDialog(
                 this,
                 lblReportSummary.getText()
