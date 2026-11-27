@@ -24,6 +24,7 @@ public class LoginForm extends JFrame {
     private JLabel forgotPasswordLabel;
     private JPanel dividerPanel;
     private JLabel footerLabel;
+    private JLabel PasswordinvalidLabel;
 
     private final GymSystemManager manager =
             GymSystemManager.getInstance();
@@ -35,6 +36,11 @@ public class LoginForm extends JFrame {
 
         if (forgotPasswordLabel != null) {
             forgotPasswordLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        }
+        if (PasswordinvalidLabel != null) {
+            PasswordinvalidLabel.setFont(UITheme.FONT_HELPER);
+            PasswordinvalidLabel.setForeground(UITheme.STATUS_RED_TEXT);
+            PasswordinvalidLabel.setText(" ");
         }
 
         loginButton.addActionListener(e -> handleLogin());
@@ -57,6 +63,10 @@ public class LoginForm extends JFrame {
     }
 
     private void handleLogin() {
+        if (PasswordinvalidLabel != null) {
+            PasswordinvalidLabel.setText(" ");
+        }
+
         String userID = textField1.getText().trim();
         String password = new String(passwordField1.getPassword());
 
@@ -88,11 +98,9 @@ public class LoginForm extends JFrame {
             }
 
         } catch (InvalidLoginException ex) {
-            UITheme.showMessageDialog(this,
-                    ex.getMessage(),
-                    "Login Failed",
-                    JOptionPane.ERROR_MESSAGE);
-
+            if (PasswordinvalidLabel != null) {
+                PasswordinvalidLabel.setText(ex.getMessage());
+            }
             passwordField1.setText("");
         }
     }
