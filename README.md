@@ -5,7 +5,7 @@
 
 **CSIT227 | Object-Oriented Programming | Capstone Project**
 
-**BSCS-2J (Group C)**
+**BSCS-2 (Group C)**
 
 </div>
 
@@ -13,7 +13,7 @@
 
 ## Group Members
 
-- **Ecarms, Kirsten Van B.**
+- **Ecarma, Kirsten Van B.**
 - **Gabito, Khian F.**
 - **Palang, Javen Shane C.**
 - **Villarba, Neil Allen A.**
@@ -557,7 +557,7 @@ GymMembershipSystem/
 <div align="center">
 
 **CSIT227 - Object-Oriented Programming**
-**Capstone Project | BSCS-2J (Group C)**
+**Capstone Project | BSCS-2 (Group C)**
 **Cebu Institute of Technology - University**
 
 </div>
