@@ -230,7 +230,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="BACK"/>
+              <text value="← BACK"/>
             </properties>
           </component>
         </children>

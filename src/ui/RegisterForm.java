@@ -87,7 +87,7 @@ public class RegisterForm extends JFrame {
         passwordTextField = new UITheme.DarkPasswordField("Enter password", 38);
         confirmTextField = new UITheme.DarkPasswordField("Confirm password", 38);
         registerButton = new UITheme.GradientButton("CREATE ACCOUNT \u2192");
-        BackButton = new UITheme.GradientButton("BACK \u2190");
+        BackButton = new UITheme.GradientButton("\u2190 BACK");
     }
 
     private void handleRegistration() {
