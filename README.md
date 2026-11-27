@@ -5,7 +5,7 @@
 
 **CSIT227 | Object-Oriented Programming | Capstone Project**
 
-**BSCS-2 (Group C)**
+**BSCS-2J (Group C)**
 
 </div>
 
@@ -13,7 +13,7 @@
 
 ## Group Members
 
-- **Ecarma, Kirsten Van B.**
+- **Ecarms, Kirsten Van B.**
 - **Gabito, Khian F.**
 - **Palang, Javen Shane C.**
 - **Villarba, Neil Allen A.**
@@ -32,11 +32,9 @@ The system is designed around the four core pillars of Object-Oriented Programmi
 | Module | Status |
 |---|---|
 | `models` package - `User`, `Member`, `Trainer`, `Admin`, `MembershipPlan`, `PaymentProcess`, `Payment`, `Session`, `Attendance` |  Implemented |
-| `ui.LoginForm` (+ `LoginForm.form`) |  Implemented - validates input and checks credentials |
-| `models.GymSystemManager` (Singleton + CSV persistence) |  Planned - design fully specified in Sections 2, 3.2 and 3.4 |
-| `ui.RegisterForm`, `ui.MemberDashboard`, `ui.TrainerDashboard`, `ui.AdminDashboard` |  Planned - layouts and behavior specified in Sections 1.4 and 3.3 |
-
-> Everything marked  is documented here as the agreed design so the class diagram and rubric items stay accurate; the code for it is the remaining sprint work.
+| `ui.LoginForm` (+ `LoginForm.form`) |  Implemented |
+| `models.GymSystemManager` (Singleton + CSV persistence) |  Implemented |
+| `ui.RegisterForm`, `ui.MemberDashboard`, `ui.TrainerDashboard`, `ui.AdminDashboard` |  Implemented |
 
 ---
 
@@ -144,6 +142,12 @@ else if (matchedUser instanceof Trainer trainer) { new TrainerDashboard(trainer)
 else if (matchedUser instanceof Admin admin)     { new AdminDashboard(admin).setVisible(true); }
 ```
 
+The manager's query methods use the same polymorphic filtering:
+
+```java
+for (User u : users) {
+  if (i instanceof Member m)result.add(m);
+```
 ---
 
 ## 2. Core System Classes & Relationships
@@ -187,19 +191,11 @@ classDiagram
         -int trainerID
         -String specialization
         -String schedule
-        +viewSessions() void
-        +updateSessions() void
-        +markAttendance(Member) void
         +getDashBoardTitle() String
     }
 
     class Admin {
         -int adminID
-        +manageMembers() void
-        +manageTrainers() void
-        +managePlans() void
-        +viewPayments() void
-        +generateReports() void
         +getDashBoardTitle() String
     }
 
@@ -254,6 +250,7 @@ classDiagram
         -LocalDateTime checkInTime
         -boolean present
         +setPresent(boolean) void
+        +setCheckInTime(LocalDateTime) void
         +toString() String
     }
 
@@ -263,15 +260,54 @@ classDiagram
         -List~MembershipPlan~ plans
         -List~Session~ sessions
         -List~Payment~ payments
-        -List~Attendance~ records
+        -List~Attendance~ attendanceRecords
         +getInstance()$ GymSystemManager
-        +login(String, String) User
-        +registerMember(...) Member
-        +bookSession(...) void
-        +recordPayment(...) void
-        +markAttendance(...) void
-        +saveAll() void
-        +loadAll() void
+        +registerMamber(String, String, String) Mamber
+        +authenticate(String, String) User
+        +generateUserID() String
+        +bookSession(Member, int) void
+        +cancelBooking(Member, int) void
+        +processPayment(Member, MembershipPlan, String) Payment
+        +markAttendance(Member, Session, boolean) void
+        +addMember(...) Member
+        +removeMember(String) void
+        +toggleMemberStatus(String) void
+        +addTrainer(...) Trainer
+        +removeTrainer(String) void
+        +updateTrainerSchedule(String, String) void
+        +createSession(Trainer, LocalDateTime, String, int) Session
+        +addPlan(...) MembershipPlan
+        +updatePlanPrice(int, double) void
+        +deletePlan(int) void
+        +getTotalCompletedRevenue() double
+    }
+
+    class FileStorageServise {
+        <<utility>>
+        -File DATA_DIR&
+        +savePlans(List~MemberShipPlan~)$ void
+        +loadPlans()$ List~MemberShipPlan~
+        +saveUsers(List~User~)$ void
+        +loadUsers(List~MemberShipPlan~)$ List~User~
+        +saveSessions(...)$ void
+        +save Payment(...)$ void
+        +saveAttendance(...)% void
+    }
+
+    class DuplicateUserException {
+        <<checked>>
+    }
+
+    class InvalidLoginException {
+        <<checked>>
+    }
+
+    class InvalidPaymentException {
+        <<checked>>
+    }
+
+    class SessionFullException {
+        <<checked>>
     }
 
     User <|-- Member
@@ -295,8 +331,6 @@ classDiagram
     GymSystemManager "1" o-- "0..*" Attendance : manages
 ```
 
-> `GymSystemManager` is the planned central registry (Singleton). `Session`, `Attendance`, `Payment` and `MembershipPlan` are already coded; the manager and the four remaining screens are the pending modules — they are kept in the diagram so the class diagram stays accurate for the rubric.
-
 ### 2.2 Relationship Summary
 
 | Relationship | Type | Classes | Why |
@@ -310,6 +344,7 @@ classDiagram
 | Association | Many-to-many (resolved) | `Member` ↔ `Session` | Linked through both lists plus `Attendance`. |
 | Association | One-to-many | `Member`/`Session` → `Attendance` | Attendance is the join record with a `checkInTime` and `present` flag. |
 | Aggregation / Registry | Singleton manager | `GymSystemManager` → all models | One central object owns the in-memory collections and persists them to CSV. |
+| Dependency | Persistence | `GymSystemManager` → `FileStorageService` | The manager delegates every read/write of data/*.csv to the static utility class. |
 
 ---
 
@@ -319,7 +354,18 @@ classDiagram
 
 The system relies on **three complementary layers** of exception handling:
 
-**1) Custom validation using built-in unchecked exceptions.** Every setter guards its own invariants:
+**1) Custom checked exceptions (exceptions package). Business-rule failures that a caller must acknowledge:
+
+```java
+public class DuplicateUserException extends Exception { ... } // duplicate email / user ID
+public class InvalidLoginException extends Exception { ... } // wrong credentials 
+public class InvalidPaymentException extends Exception { ... }
+public class SessionFullException extends Exception { ... }
+
+```
+`GymSystemManager.authenticate()` throws `InvalidLoginException` when no account matches, and `registerMember()` / `addMember()` / `addTrainer()` throws `DuplicateUserException` when the email or user ID already exists.
+
+**2) Custom validation using built-in unchecked exceptions.** Every setter guards its own invariants:
 
 ```java
 // User.java
@@ -350,27 +396,36 @@ public void book(Member member) {
     if (enrolledMembers.size() >= maxCapacity)  throw new IllegalStateException("Session is already full.");
     ...
 }
-```
 
-**2) `throws` on the interface.** `PaymentProcess.processPayment()` declares `throws Exception`, which forces every caller (the GUI and `GymSystemManager`) to acknowledge that a payment can fail:
-
-```java
-public interface PaymentProcess {
-    void processPayment() throws Exception;
+// Payment.java - settlement rule (implements PaymentProcess)
+@Override
+public void processpayment() {
+    if (plan != null && amount < plan.getPrice()) {
+        this.status = "failed";
+        throw new IllegalArgumentException("Insufficient payment for plan: " + plan.getPlanName());
+    }
+    this.status = "Completed";
+    if (member != null && plan != null) member.renewPlan(plan); // activates/ extends membership
 }
 ```
 
 **3) GUI-level catching and user feedback.** Actions are wrapped in `try-catch`, and the message is shown back to the user through the shared dialog helper instead of crashing the window:
 
 ```java
+// LoginForm.java
 try {
-    payment.processPayment();
-    showMessageDialog(this, "Payment completed. Receipt No. " + payment.getPaymentID());
-} catch (IllegalArgumentException ex) {
-    showMessageDialog(this, "Payment failed: " + ex.getMessage());   // e.g. insufficient amount
-} catch (Exception ex) {
-    showMessageDialog(this, "Unexpected error: " + ex.getMessage());
+    user matchedUser = manager.authenticate(userID, password); // ... route to the matching dashboard
+} catch (InvalidLoginException ex) {
+    UITheme.showMessageDialog(this, ex.getMessage(), "Login Failed", JOptionPane.ERROR_MESSAGE);
+    passwordField1.setText("");
 }
+
+// RegisterForm.java
+try {
+    Member newMember = manager.registerMember(name, email, password);
+    ...
+} catch (DuplicateUserException | IlligalArgumentMember ex) {
+     UITheme.showMessageDialog(this, ex.getMessage(), "registration Failed", JOptionPane.ERROR_MESSAGE);
 ```
 
 `LoginForm` already reports problems without exceptions crossing the UI boundary:
@@ -388,16 +443,15 @@ if (!userID.matches("\\d{2}-\\d{4}-\\d{3}")) {
 
 *(Persistence layer is planned - the CSV schema below is the specification the file-handling methods will implement.)*
 
-All records are persisted as plain **CSV text files** inside the `data/` folder, written and read by `GymSystemManager` using `BufferedReader` / `BufferedWriter` (`java.io`). No external database is required, so the project runs offline on any machine with a JDK.
+All records are persisted as plain **CSV text files** inside the `data/` folder, written and read by `services.FileStorageService` using `BufferedReader` / `BufferedWriter` (`java.io` + `java.nio`).
+No external database is required, so the project runs offline on any machine with a JDK. the data/ directory is created automatically (DATA_DIR.mkdirs() in a static initializer).
 
 ```
 data/
 ├── users.csv
-├── trainers.csv
-├── members_table.csv
 ├── plans.csv
-├── payments.csv
 ├── sessions.csv
+├── payments.csv
 └── attendance.csv
 ```
 
@@ -406,23 +460,14 @@ data/
 | File | Header (row 1) | Sample row |
 |---|---|---|
 | `users.csv` | `userID,name,email,password,role` | `25-1824-135,System Admin,admin@gym.com,admin123,Admin` |
-| `trainers.csv` | `userID,trainerID,specialization,schedule` | `25-1231-123,201,Strength,MWF 8AM-5PM` |
-| `members_table.csv` | `userID,membershipNumber,planID,joinDate,expiryDate,status` | `25-1231-124,1001,1,2026-11-20,2026-12-20,Active` |
 | `plans.csv` | `planID,planName,price,durationMonths,description` | `1,Gold,1500.00,1,Full gym + classes` |
-| `payments.csv` | `paymentID,userID,planID,amount,paymentDate,method,status` | `5001,25-1231-124,1,1500.00,2026-11-20,Cash,Completed` |
 | `sessions.csv` | `sessionID,trainerID,type,sessionDate,maxCapacity,status,enrolledUserIDs` | `301,201,Strength,2026-11-22T08:00,10,Scheduled,25-1231-124;25-1232-118` |
+| `payments.csv` | `paymentID,userID,planID,amount,paymentDate,method,status` | `5001,25-1231-124,1,1500.00,2026-11-20,Cash,Completed` |
 | `attendance.csv` | `attendanceID,userID,sessionID,checkInTime,present` | `701,25-1231-124,301,2026-11-22T08:12,true` |
-
-**Conventions**
-
-- Dates use `LocalDate.toString()` (`yyyy-MM-dd`); timestamps use `LocalDateTime.toString()` (`yyyy-MM-ddTHH:mm`), so both parse back with `LocalDate.parse()` / `LocalDateTime.parse()`.
-- Multi-value cells (`enrolledUserIDs`) are joined with `;` to stay inside one CSV field.
-- On startup `loadAll()` reads each file into the in-memory lists; `saveAll()` rewrites the file after every add/update/delete (register, book, pay, mark attendance).
-- Reading is defensive: a missing file is treated as an empty list (`new File(...).exists()` check) and malformed rows are skipped with a warning instead of stopping the program.
 
 ### 3.3 GUI Screens
 
-The GUI is built with **Java Swing**, designed in the IntelliJ GUI Designer (`.form` files) and bound to panels declared in the Java classes.
+The GUI is built with **Java Swing**, designed in the IntelliJ GUI Designer (`.form` files) and themes at runtime by `ui.UITheme` (dark navy surfaces, gradeint buttons, glass cards, hero header, styled tables/tabs/combo boxes) `ui.DarkDialog` provide drop-in replacement for `JOptionPane` massege/comfirm/input dialogs in the same dark-athletic style.
 
 | Screen | Class | Purpose |
 |---|---|---|
@@ -505,7 +550,7 @@ java -cp out ui.LoginForm
 
 ## 5. Demo Login Credentials
 
-Pre-loaded accounts (`LoginForm.loadDummyUsers()`), so the professor can test every screen immediately without registering:
+Seeded automatically by `GymSystemManager.seedDefaultData()` on the first run (and kept in `data/users.csv`):
 
 | Role | User ID | Password | Loaded record |
 |---|---|---|---|
@@ -513,9 +558,8 @@ Pre-loaded accounts (`LoginForm.loadDummyUsers()`), so the professor can test ev
 | **Trainer** | `25-1231-123` | `train123` | Coach Alex - Strength, MWF 8AM-5PM (trainerID `201`) |
 | **Member** | `25-1231-124` | `mem123` | Juan Dela Cruz, #1001, Gold plan (₱1,500 / 1 month), Active |
 
-> **Important:** the currently committed `loadDummyUsers()` gives the Trainer and the Member the *same* User ID (`25-1231-123`), and `LoginForm` iterates the list in order so the Trainer account matches first and the Member account can never be reached. Change the Member's ID to `25-1231-124` (as shown above) before defending the project.
 
-**User ID format is enforced:** `XX-XXXX-XXX` (e.g. `25-1824-135`). Any other format is rejected on the login screen and by `User.setUserID()`. Passwords must be at least 4 characters.
+**User ID format is enforced: `XX-XXXX-XXX` (e.g. 25-1824-135). Any other format is rejected on the login screen and by `User.setUserID()`. Passwords must be at least 4 characters. Self-registered members receive an auto-generated ID (YY-SSSS-RRR — year, sequence, random digits) shown once at the end of registration.
 
 ---
 
@@ -524,32 +568,39 @@ Pre-loaded accounts (`LoginForm.loadDummyUsers()`), so the professor can test ev
 ```
 GymMembershipSystem/
 ├── README.md
-├── data/
-│   ├── users.csv
-│   ├── trainers.csv
-│   ├── members_table.csv
+├── data/                              (auto-created on first run)
+│   ├── users.csv                      all roles in one file (role column)
 │   ├── plans.csv
-│   ├── payments.csv
 │   ├── sessions.csv
+│   ├── payments.csv
 │   └── attendance.csv
 └── src/
     ├── models/
-    │   ├── User.java              (abstract - Abstraction, Encapsulation)
-    │   ├── Member.java            (Inheritance, Polymorphism)
-    │   ├── Trainer.java           (Inheritance, Polymorphism)
-    │   ├── Admin.java             (Inheritance, Polymorphism)
-    │   ├── MembershipPlan.java    (Encapsulation - validated setters)
-    │   ├── PaymentProcess.java    (interface - Abstraction)
-    │   ├── Payment.java           (implements PaymentProcess)
-    │   ├── Session.java           (association: trainer + enrolled members)
-│   ├── Attendance.java        (join record: member + session)
-│   └── GymSystemManager.java  (planned - Singleton: data registry + CSV I/O)
+    │   ├── User.java                  (abstract — Abstraction, Encapsulation)
+    │   ├── Member.java                (Inheritance, Polymorphism)
+    │   ├── Trainer.java               (Inheritance, Polymorphism)
+    │   ├── Admin.java                 (Inheritance, Polymorphism)
+    │   ├── MembershipPlan.java        (Encapsulation — validated setters)
+    │   ├── PaymentProcess.java        (interface — Abstraction)
+    │   ├── Payment.java               (implements PaymentProcess)
+    │   ├── Session.java               (association: trainer + enrolled members)
+    │   └── Attendance.java            (join record: member + session)
+    ├── services/
+    │   ├── GymSystemManager.java      (Singleton: data registry + business actions)
+    │   └── FileStorageService.java    (static CSV reader/writer for data/)
+    ├── exceptions/
+    │   ├── DuplicateUserException.java
+    │   ├── InvalidLoginException.java
+    │   ├── InvalidPaymentException.java
+    │   └── SessionFullException.java
     └── ui/
-        ├── LoginForm.java  + LoginForm.form    implemented
-        ├── RegisterForm.java                   planned
-        ├── MemberDashboard.java                planned
-        ├── TrainerDashboard.java               planned
-        └── AdminDashboard.java                 planned
+        ├── LoginForm.java   + LoginForm.form      (entry screen)
+        ├── RegisterForm.java + RegisterForm.form  (self-service sign-up)
+        ├── MemberDashboard.java   + .form         (member portal)
+        ├── TrainerDashboard.java  + .form         (trainer portal)
+        ├── AdminDashboard.java    + .form         (admin control panel)
+        ├── UITheme.java                        (shared dark theme engine)
+        └── DarkDialog.java                     (styled modal dialogs)
 ```
 
 ---
@@ -557,7 +608,7 @@ GymMembershipSystem/
 <div align="center">
 
 **CSIT227 - Object-Oriented Programming**
-**Capstone Project | BSCS-2 (Group C)**
+**Capstone Project | BSCS-2J (Group C)**
 **Cebu Institute of Technology - University**
 
 </div>
