@@ -2,6 +2,9 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import services.GymSystemManager;
 import exceptions.DuplicateUserException;
 import models.*;
@@ -25,6 +28,8 @@ public class RegisterForm extends JFrame {
     private JLabel logoLabel;
     private JLabel brandLabel;
     private JLabel footerLabel;
+    private JLabel passwordErrorLabel;
+    private JButton BackButton;
 
     private final GymSystemManager manager =
             GymSystemManager.getInstance();
@@ -37,7 +42,34 @@ public class RegisterForm extends JFrame {
         if (CustomIDLabel != null) CustomIDLabel.setVisible(false);
         if (CustomIDTF != null) CustomIDTF.setVisible(false);
 
+        if (passwordErrorLabel != null) {
+            passwordErrorLabel.setForeground(UITheme.STATUS_RED_TEXT);
+            passwordErrorLabel.setText(" ");
+        }
+
+        passwordTextField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private void validatePasswordLive() {
+                if (passwordErrorLabel == null) return;
+                int len = passwordTextField.getPassword().length;
+                if (len > 0 && len < 8) {
+                    passwordErrorLabel.setText("Password should be 8 characters long");
+                } else {
+                    passwordErrorLabel.setText(" ");
+                }
+            }
+
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { validatePasswordLive(); }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { validatePasswordLive(); }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { validatePasswordLive(); }
+        });
+
         registerButton.addActionListener(e -> handleRegistration());
+        BackButton.addActionListener(e -> UITheme.switchFrame(this, new LoginForm()));
     }
 
     private void createUIComponents() {
@@ -55,6 +87,7 @@ public class RegisterForm extends JFrame {
         passwordTextField = new UITheme.DarkPasswordField("Enter password", 38);
         confirmTextField = new UITheme.DarkPasswordField("Confirm password", 38);
         registerButton = new UITheme.GradientButton("CREATE ACCOUNT \u2192");
+        BackButton = new UITheme.GradientButton("BACK \u2190");
     }
 
     private void handleRegistration() {
@@ -96,6 +129,9 @@ public class RegisterForm extends JFrame {
         }
 
         if (password.length() < 8) {
+            if (passwordErrorLabel != null) {
+                passwordErrorLabel.setText("Password should be 8 characters long");
+            }
             UITheme.showMessageDialog(this,
                     "Password invalid. Password should be 8 characters long", "Invalid Password", JOptionPane.WARNING_MESSAGE);
             return;
