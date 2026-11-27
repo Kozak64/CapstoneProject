@@ -1,4 +1,3 @@
-
 package ui;
 
 import models.*;
@@ -18,44 +17,43 @@ public class LoginForm extends JFrame {
     private JLabel passwordLabel;
     private JLabel titleLabel;
     private JLabel subtitleLabel;
+    private JLabel logoLabel;
+    private JLabel brandLabel;
+    private JPanel optionsPanel;
+    private JCheckBox rememberMeCheckBox;
+    private JLabel forgotPasswordLabel;
+    private JPanel dividerPanel;
+    private JLabel footerLabel;
 
     private final GymSystemManager manager =
             GymSystemManager.getInstance();
 
     public LoginForm() {
-        setTitle("Gym Membership System - Sign In");
         setContentPane(LoginMenu);
-        setSize(500, 520);
-        setResizable(false);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        UITheme.configureWindow(this, "Hussle Fitness - Gym Membership System (Sign In)");
         getRootPane().setDefaultButton(loginButton);
 
-        applyTheme();
+        if (forgotPasswordLabel != null) {
+            forgotPasswordLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        }
 
         loginButton.addActionListener(e -> handleLogin());
+        textField1.addActionListener(e -> handleLogin());
+        passwordField1.addActionListener(e -> handleLogin());
 
-        registerButton.addActionListener(e -> {
-            new RegisterForm().setVisible(true);
-            dispose();
-        });
+        registerButton.addActionListener(e -> UITheme.switchFrame(this, new RegisterForm()));
     }
 
-    private void applyTheme() {
-        LoginMenu.setBackground(UITheme.BG_GRAY);
-        UITheme.styleCard(cardPanel, 24, 28);
-
-        titleLabel.setForeground(UITheme.TEXT_DARK);
-        subtitleLabel.setForeground(UITheme.TEXT_MUTED);
-        userIDLabel.setForeground(UITheme.TEXT_DARK);
-        passwordLabel.setForeground(UITheme.TEXT_DARK);
-        passwordLabel.setEnabled(true);
-
-        UITheme.styleInput(textField1);
-        UITheme.styleInput(passwordField1);
-
-        UITheme.stylePrimaryButton(loginButton);
-        UITheme.styleSecondaryButton(registerButton);
+    private void createUIComponents() {
+        LoginMenu = new UITheme.BackgroundPanel(UITheme.loadImage(getClass(), UITheme.LOGIN_BG_ASSET));
+        logoLabel = UITheme.createHeaderLogoLabel(getClass(), UITheme.LOGO_HORIZONTAL_ASSET, 34);
+        cardPanel = new UITheme.GlassCardPanel();
+        textField1 = new UITheme.DarkTextField("xx-xxxx-xxx");
+        passwordField1 = new UITheme.DarkPasswordField("Enter password");
+        rememberMeCheckBox = new UITheme.DarkCheckBox("Remember me");
+        loginButton = new UITheme.GradientButton("LOG IN \u2192");
+        dividerPanel = new UITheme.DividerWithLabel("or");
+        registerButton = new UITheme.OutlineAccentButton("CREATE NEW ACCOUNT");
     }
 
     private void handleLogin() {
@@ -63,7 +61,7 @@ public class LoginForm extends JFrame {
         String password = new String(passwordField1.getPassword());
 
         if (userID.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
+            UITheme.showMessageDialog(this,
                     "Please enter both User ID and password.",
                     "Missing Input",
                     JOptionPane.WARNING_MESSAGE);
@@ -71,7 +69,7 @@ public class LoginForm extends JFrame {
         }
 
         if (!userID.matches("\\d{2}-\\d{4}-\\d{3}")) {
-            JOptionPane.showMessageDialog(this,
+            UITheme.showMessageDialog(this,
                     "Invalid User ID format. Use XX-XXXX-XXX.",
                     "Invalid Format",
                     JOptionPane.WARNING_MESSAGE);
@@ -82,17 +80,15 @@ public class LoginForm extends JFrame {
             User matchedUser = manager.authenticate(userID, password);
 
             if (matchedUser instanceof Member member) {
-                new MemberDashboard(member).setVisible(true);
+                UITheme.switchFrame(this, new MemberDashboard(member));
             } else if (matchedUser instanceof Trainer trainer) {
-                new TrainerDashboard(trainer).setVisible(true);
+                UITheme.switchFrame(this, new TrainerDashboard(trainer));
             } else if (matchedUser instanceof Admin admin) {
-                new AdminDashboard(admin).setVisible(true);
+                UITheme.switchFrame(this, new AdminDashboard(admin));
             }
 
-            dispose();
-
         } catch (InvalidLoginException ex) {
-            JOptionPane.showMessageDialog(this,
+            UITheme.showMessageDialog(this,
                     ex.getMessage(),
                     "Login Failed",
                     JOptionPane.ERROR_MESSAGE);
@@ -100,10 +96,4 @@ public class LoginForm extends JFrame {
             passwordField1.setText("");
         }
     }
-
-
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(() -> new LoginForm().setVisible(true));
-//    }
-
 }

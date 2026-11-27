@@ -39,10 +39,7 @@ public class AdminDashboard extends JFrame {
     public AdminDashboard(Admin admin) {
         this.currentAdmin = admin;
 
-        setTitle("Gym Membership System - Admin Dashboard");
-        setSize(920, 580);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        UITheme.configureWindow(this, "Hussle Fitness - Admin Dashboard");
 
         initUI();
         populateHeader();
@@ -247,7 +244,7 @@ public class AdminDashboard extends JFrame {
 
         JButton btnGenerateReport = new JButton("Generate Summary Report");
         UITheme.stylePrimaryButton(btnGenerateReport);
-        btnGenerateReport.addActionListener(e -> JOptionPane.showMessageDialog(
+        btnGenerateReport.addActionListener(e -> UITheme.showMessageDialog(
                 this,
                 lblReportSummary.getText()
                         + "\nMembers: " + manager.getMembers().size()
@@ -335,7 +332,7 @@ public class AdminDashboard extends JFrame {
 
     private boolean requireSelection(JTable table, String label) {
         if (table.getSelectedRow() == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a " + label + " first.",
+            UITheme.showMessageDialog(this, "Please select a " + label + " first.",
                     "Selection Required", JOptionPane.WARNING_MESSAGE);
             return false;
         }
@@ -343,27 +340,27 @@ public class AdminDashboard extends JFrame {
     }
 
     private boolean confirmRemoval(String label) {
-        return JOptionPane.showConfirmDialog(this, "Remove selected " + label + "?",
+        return UITheme.showConfirmDialog(this, "Remove selected " + label + "?",
                 "Confirm Removal", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
 
     private void handleAddMember() {
         List<MembershipPlan> plans = manager.getPlans();
         if (plans.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Create a membership plan first.",
+            UITheme.showMessageDialog(this, "Create a membership plan first.",
                     "No Plans", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        String name = JOptionPane.showInputDialog(this, "Member Full Name:");
+        String name = UITheme.showInputDialog(this, "Member Full Name:");
         if (name == null || name.trim().isEmpty()) return;
-        String email = JOptionPane.showInputDialog(this, "Member Email:");
+        String email = UITheme.showInputDialog(this, "Member Email:");
         if (email == null || email.trim().isEmpty()) return;
 
         JComboBox<MembershipPlan> planBox = new JComboBox<>(plans.toArray(new MembershipPlan[0]));
         planBox.setRenderer((list, value, index, sel, focus) ->
                 new JLabel(value == null ? "" : value.getPlanName()));
-        int choice = JOptionPane.showConfirmDialog(this, planBox, "Select Plan",
+        int choice = UITheme.showConfirmDialog(this, planBox, "Select Plan",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (choice != JOptionPane.OK_OPTION) return;
         MembershipPlan plan = (MembershipPlan) planBox.getSelectedItem();
@@ -373,11 +370,11 @@ public class AdminDashboard extends JFrame {
             String id = manager.generateUserID();
             manager.addMember(id, name.trim(), email.trim(), "pass123", plan, "Active");
             reloadAll();
-            JOptionPane.showMessageDialog(this,
+            UITheme.showMessageDialog(this,
                     "Member registered successfully!\n\nUser ID: " + id + "\nDefault Password: " + "pass123",
                     "Member Added", JOptionPane.INFORMATION_MESSAGE);
         } catch (DuplicateUserException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Duplicate Email Error", JOptionPane.ERROR_MESSAGE);
+            UITheme.showMessageDialog(this, ex.getMessage(), "Duplicate Email Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -399,23 +396,23 @@ public class AdminDashboard extends JFrame {
     }
 
     private void handleAddTrainer() {
-        String name = JOptionPane.showInputDialog(this, "Trainer Full Name:");
+        String name = UITheme.showInputDialog(this, "Trainer Full Name:");
         if (name == null || name.trim().isEmpty()) return;
         String defaultEmail = name.trim().toLowerCase().replaceAll("\\s+", ".") + "@gym.com";
-        String email = JOptionPane.showInputDialog(this, "Trainer Email:", defaultEmail);
+        String email = UITheme.showInputDialog(this, "Trainer Email:", defaultEmail);
         if (email == null || email.trim().isEmpty()) return;
-        String spec = JOptionPane.showInputDialog(this, "Specialization:", "General Fitness");
+        String spec = UITheme.showInputDialog(this, "Specialization:", "General Fitness");
         if (spec == null || spec.trim().isEmpty()) return;
 
         try {
             String id = manager.generateUserID();
             manager.addTrainer(id, name.trim(), email.trim(), "train123", spec.trim(), "MWF 9AM-5PM");
             reloadAll();
-            JOptionPane.showMessageDialog(this,
+            UITheme.showMessageDialog(this,
                     "Trainer added successfully!\n\nUser ID: " + id + "\nEmail: " + email.trim() + "\nDefault Password: " + "train123",
                     "Trainer Added", JOptionPane.INFORMATION_MESSAGE);
         } catch (DuplicateUserException | IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            UITheme.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -435,7 +432,7 @@ public class AdminDashboard extends JFrame {
         form.add(new JLabel("Date & Time (yyyy-MM-dd HH:mm):")); form.add(tfDate);
         form.add(new JLabel("Max Capacity:")); form.add(tfCap);
 
-        int result = JOptionPane.showConfirmDialog(this, form, "Create Training Session",
+        int result = UITheme.showConfirmDialog(this, form, "Create Training Session",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result != JOptionPane.OK_OPTION) return;
 
@@ -446,14 +443,14 @@ public class AdminDashboard extends JFrame {
             if (type.isEmpty()) throw new IllegalArgumentException("Session type cannot be empty.");
 
             Session created = manager.createSession(trainer, dateTime, type, capacity);
-            JOptionPane.showMessageDialog(this,
+            UITheme.showMessageDialog(this,
                     "Created session SES-" + created.getSessionID() + " for " + trainer.getName() + ".",
                     "Session Created", JOptionPane.INFORMATION_MESSAGE);
         } catch (DateTimeParseException ex) {
-            JOptionPane.showMessageDialog(this, "Use date format yyyy-MM-dd HH:mm (e.g. 2026-11-23 09:00).",
+            UITheme.showMessageDialog(this, "Use date format yyyy-MM-dd HH:mm (e.g. 2026-11-23 09:00).",
                     "Invalid Date", JOptionPane.ERROR_MESSAGE);
         } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            UITheme.showMessageDialog(this, ex.getMessage(), "Invalid Input", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -471,7 +468,7 @@ public class AdminDashboard extends JFrame {
         String userId = trainersModel.getValueAt(row, 0).toString();
         Trainer t = (Trainer) manager.findUserById(userId);
 
-        String updated = JOptionPane.showInputDialog(this, "New Schedule:", t.getSchedule());
+        String updated = UITheme.showInputDialog(this, "New Schedule:", t.getSchedule());
         if (updated != null && !updated.trim().isEmpty()) {
             manager.updateTrainerSchedule(userId, updated.trim());
             reloadAll();
@@ -480,13 +477,13 @@ public class AdminDashboard extends JFrame {
     }
 
     private void handleAddPlan() {
-        String name = JOptionPane.showInputDialog(this, "Plan Name:");
+        String name = UITheme.showInputDialog(this, "Plan Name:");
         if (name == null || name.trim().isEmpty()) return;
-        String priceStr = JOptionPane.showInputDialog(this, "Price (PHP):", "1500");
+        String priceStr = UITheme.showInputDialog(this, "Price (PHP):", "1500");
         if (priceStr == null) return;
-        String monthsStr = JOptionPane.showInputDialog(this, "Duration (Months):", "1");
+        String monthsStr = UITheme.showInputDialog(this, "Duration (Months):", "1");
         if (monthsStr == null) return;
-        String desc = JOptionPane.showInputDialog(this, "Description:", "Custom plan");
+        String desc = UITheme.showInputDialog(this, "Description:", "Custom plan");
         if (desc == null) return;
 
         try {
@@ -497,7 +494,7 @@ public class AdminDashboard extends JFrame {
             manager.addPlan(name.trim(), price, months, desc.trim());
             reloadAll();
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this,
+            UITheme.showMessageDialog(this,
                     "Price must be a non-negative number and duration a positive whole number.",
                     "Invalid Input", JOptionPane.ERROR_MESSAGE);
         }
@@ -518,7 +515,7 @@ public class AdminDashboard extends JFrame {
         // Grabs the plan directly from the list by index instead of using findPlanById
         MembershipPlan plan = manager.getPlans().get(row);
 
-        String input = JOptionPane.showInputDialog(this, "New Price (PHP):", plan.getPrice());
+        String input = UITheme.showInputDialog(this, "New Price (PHP):", plan.getPrice());
 
         if (input != null && !input.trim().isEmpty()) {
             try {
@@ -529,18 +526,17 @@ public class AdminDashboard extends JFrame {
                 reloadAll();
                 tblPlans.setRowSelectionInterval(row, row);
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Please enter a valid non-negative number.",
+                UITheme.showMessageDialog(this, "Please enter a valid non-negative number.",
                         "Invalid Price", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
     private void handleLogout() {
-        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to logout?",
+        int confirm = UITheme.showConfirmDialog(this, "Are you sure you want to logout?",
                 "Confirm Logout", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            dispose();
-            new LoginForm().setVisible(true);
+            UITheme.switchFrame(this, new LoginForm());
         }
     }
 
