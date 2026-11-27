@@ -4,7 +4,6 @@ import models.*;
 import services.GymSystemManager;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.LocalDateTime;
@@ -20,13 +19,34 @@ public class TrainerDashboard extends JFrame {
     private final GymSystemManager manager = GymSystemManager.getInstance();
 
     private JPanel mainPanel;
+    private JScrollPane dashboardScrollPane;
+    private JPanel scrollContentPanel;
+    private JPanel heroPanel;
+    private JLabel lblLogo;
+    private JLabel lblHeroHeadline;
+    private JLabel lblHeroSubheadline;
+
     private JLabel DashboardTitle;
-    private JLabel Subtitle;
+    private JLabel Subtitle = new JLabel();
+    private JPanel welcomeCardPanel;
+    private JLabel lblWelcomeBody;
+    private JPanel cardTrainerId;
+    private JPanel cardSpecialization;
+    private JPanel cardSchedule;
+    private JLabel lblTrainerIdValue;
+    private JLabel lblSpecializationValue;
+    private JLabel lblScheduleValue;
+
     private JTabbedPane tabbedPane1;
+    private JPanel tabMySessions;
+    private JScrollPane sessionsScrollPane;
     private JTable Sessiontabel;
     private JButton updateScheduleButton;
     private JButton cancelSessionButton;
+
+    private JPanel tabMarkAttendance;
     private JComboBox<String> cmSessionFilter;
+    private JScrollPane attendanceScrollPane;
     private JTable AttendanceTabel;
     private JButton markPresentButton;
     private JButton markAbsentButton;
@@ -43,7 +63,7 @@ public class TrainerDashboard extends JFrame {
         this.currentTrainer = trainer;
 
         setContentPane(mainPanel);
-        UITheme.configureWindow(this, "Hussle Fitness - Trainer Dashboard");
+        UITheme.configureAdaptiveFrame(this, "Hussle Fitness - Trainer Dashboard");
 
         applyTheme();
         populateHeader();
@@ -56,49 +76,119 @@ public class TrainerDashboard extends JFrame {
         this(null);
     }
 
+    private void createUIComponents() {
+        scrollContentPanel = new UITheme.ScrollableDarkPanel();
+        heroPanel = new UITheme.HeroHeaderPanel(
+                UITheme.loadImage(getClass(), UITheme.GYM_HERO_BG_ASSET),
+                UITheme.HeroHeaderPanel.DEFAULT_HERO_HEIGHT
+        );
+        lblLogo = UITheme.createHeaderLogoLabel(
+                getClass(),
+                UITheme.LOGO_STACKED_ASSET,
+                UITheme.LOGO_HORIZONTAL_ASSET,
+                46
+        );
+        lblHeroHeadline = new UITheme.HeroHeadlineLabel("HUSS.", " HUSS. HUSS.");
+        lblHeroSubheadline = new UITheme.HeroSubheadlineLabel(
+                "In this town, everybody goes out partying except us. Ready to join the few?",
+                520
+        );
+        btnLogout = new UITheme.OutlineAccentButton(
+                "LOGOUT",
+                UITheme.LOGOUT_BORDER,
+                UITheme.TEXT_LIGHT,
+                36,
+                104,
+                1.0f,
+                16
+        );
+
+        welcomeCardPanel = new UITheme.DarkGlassCard();
+        lblWelcomeBody = new UITheme.WrappingParagraphLabel(
+                "Ready to put in the work? Manage your daily schedules, coordinate training slots, and keep track of everyone on the gym floor. "
+                        + "Check back here to view your active roster, update class availability, and ensure every athlete is accounted for.",
+                "Huss. Huss. Huss.",
+                UITheme.FONT_INTRO_BODY,
+                UITheme.TEXT_LIGHT,
+                UITheme.ACCENT_YELLOW,
+                1.38f
+        );
+        cardTrainerId = new UITheme.DarkGlassCard();
+        cardSpecialization = new UITheme.DarkGlassCard();
+        cardSchedule = new UITheme.DarkGlassCard();
+
+        tabMySessions = new UITheme.DarkGlassCard();
+        tabMarkAttendance = new UITheme.DarkGlassCard();
+
+        cancelSessionButton = new UITheme.OutlineAccentButton(
+                "CANCEL SESSION",
+                UITheme.STATUS_RED,
+                UITheme.STATUS_RED,
+                42,
+                176,
+                1.5f,
+                20
+        );
+        updateScheduleButton = new UITheme.GradientButton(
+                "UPDATE SCHEDULE \u2192",
+                42,
+                224
+        );
+        markAbsentButton = new UITheme.OutlineAccentButton(
+                "MARK ABSENT",
+                UITheme.STATUS_RED,
+                UITheme.STATUS_RED,
+                42,
+                168,
+                1.5f,
+                20
+        );
+        markPresentButton = new UITheme.GradientButton(
+                "MARK PRESENT \u2192",
+                42,
+                210
+        );
+    }
+
     private void applyTheme() {
         mainPanel.setBackground(UITheme.BG_NAVY);
-        mainPanel.setBorder(new EmptyBorder(18, 22, 18, 22));
-
-        DashboardTitle.setFont(UITheme.FONT_TITLE);
-        DashboardTitle.setForeground(UITheme.TEXT_WHITE);
-
-        Subtitle.setFont(UITheme.FONT_SUBTITLE);
-        Subtitle.setForeground(UITheme.TEXT_SLATE);
-
-        UITheme.styleDarkTabbedPane(tabbedPane1);
-        for (int i = 0; i < tabbedPane1.getTabCount(); i++) {
-            Component comp = tabbedPane1.getComponentAt(i);
-            if (comp instanceof JComponent jc) {
-                jc.setBackground(UITheme.SURFACE_DARK);
-            }
+        UITheme.styleDarkScrollPane(dashboardScrollPane, false);
+        dashboardScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        UITheme.installSmoothScrolling(dashboardScrollPane, sessionsScrollPane, attendanceScrollPane);
+        if (heroPanel instanceof UITheme.HeroHeaderPanel heroHeader) {
+            heroHeader.attachScrollFade(dashboardScrollPane);
         }
 
-        UITheme.styleDarkComboBox(cmSessionFilter);
+        DashboardTitle.setFont(UITheme.FONT_PORTAL_TITLE);
+        DashboardTitle.setForeground(UITheme.TEXT_WHITE);
 
-        UITheme.styleButton(updateScheduleButton, UITheme.ELECTRIC_BLUE, UITheme.TEXT_WHITE, false);
-        UITheme.styleButton(cancelSessionButton, UITheme.STATUS_RED, UITheme.TEXT_WHITE, false);
-        UITheme.styleButton(markPresentButton, UITheme.ELECTRIC_BLUE, UITheme.TEXT_WHITE, false);
-        UITheme.styleButton(markAbsentButton, UITheme.SURFACE_ALT, UITheme.TEXT_LIGHT, true);
-        markAbsentButton.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(UITheme.LOGOUT_BORDER, 1),
-                new EmptyBorder(6, 14, 6, 14)
-        ));
-        UITheme.styleButton(btnLogout, UITheme.SURFACE_ALT, UITheme.TEXT_LIGHT, true);
-        btnLogout.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(UITheme.LOGOUT_BORDER, 1),
-                new EmptyBorder(6, 14, 6, 14)
-        ));
+        UITheme.styleDarkTabbedPane(tabbedPane1);
+        UITheme.styleDarkComboBox(cmSessionFilter);
     }
 
     private void populateHeader() {
         if (currentTrainer != null) {
             DashboardTitle.setText(currentTrainer.getDashBoardTitle());
+
+            String trainerIdText = "TR-" + currentTrainer.getTrainerID();
+            String specText = currentTrainer.getSpecialization() != null && !currentTrainer.getSpecialization().isBlank()
+                    ? currentTrainer.getSpecialization()
+                    : "General Fitness";
+            String scheduleText = currentTrainer.getSchedule() != null && !currentTrainer.getSchedule().isBlank()
+                    ? currentTrainer.getSchedule()
+                    : "N/A";
+
+            lblTrainerIdValue.setText(trainerIdText);
+            lblSpecializationValue.setText(specText);
+            lblScheduleValue.setText(scheduleText);
             Subtitle.setText("Trainer ID: " + currentTrainer.getTrainerID()
-                    + "   |   Specialization: " + currentTrainer.getSpecialization()
-                    + "   |   Schedule: " + currentTrainer.getSchedule());
+                    + "   |   Specialization: " + specText
+                    + "   |   Schedule: " + scheduleText);
         } else {
             DashboardTitle.setText("Trainer Portal - All Trainers");
+            lblTrainerIdValue.setText("All Trainers");
+            lblSpecializationValue.setText("All Specialties");
+            lblScheduleValue.setText("Preview Mode");
             Subtitle.setText("Preview Mode");
         }
     }
@@ -113,8 +203,7 @@ public class TrainerDashboard extends JFrame {
             }
         };
         Sessiontabel.setModel(sessionsModel);
-        JScrollPane sessionScroll = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, Sessiontabel);
-        UITheme.styleDarkTable(Sessiontabel, sessionScroll, 4);
+        UITheme.styleDarkTable(Sessiontabel, sessionsScrollPane, 4);
 
         attendanceModel = new DefaultTableModel(
                 new Object[]{"User ID", "Member Name", "Plan", "Attendance Status"}, 0
@@ -125,8 +214,7 @@ public class TrainerDashboard extends JFrame {
             }
         };
         AttendanceTabel.setModel(attendanceModel);
-        JScrollPane attendanceScroll = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, AttendanceTabel);
-        UITheme.styleDarkTable(AttendanceTabel, attendanceScroll, 3);
+        UITheme.styleDarkTable(AttendanceTabel, attendanceScrollPane, 3);
     }
 
     private void refreshSessions() {

@@ -2079,11 +2079,11 @@ public final class UITheme {
             setBackground(isSelected ? TABLE_SELECTION_BG : ((row % 2 == 0) ? SURFACE_DARK : SURFACE_ALT));
 
             String lower = text.toLowerCase();
-            if (lower.startsWith("booked")) {
+            if (lower.startsWith("booked") || lower.equals("scheduled")) {
                 pillBg = new Color(10, 132, 255, 52);
                 pillBorder = ELECTRIC_BLUE;
                 pillText = STATUS_BLUE_TEXT;
-            } else if (lower.startsWith("available") || lower.equals("present") || lower.equals("active")) {
+            } else if (lower.startsWith("available") || lower.equals("present") || lower.equals("active") || lower.equals("completed")) {
                 pillBg = new Color(34, 197, 94, 42);
                 pillBorder = STATUS_GREEN;
                 pillText = STATUS_GREEN_TEXT;
