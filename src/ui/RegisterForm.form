@@ -223,7 +223,7 @@
               <text value="&lt;html&gt;&lt;div style='text-align:center; padding-top:6px;'&gt;In this town, everybody goes out partying except us.&lt;br&gt;Huss. Huss. Huss.&lt;/div&gt;&lt;/html&gt;"/>
             </properties>
           </component>
-          <component id="dc68c" class="javax.swing.JButton" binding="BackButton">
+          <component id="1e3f9" class="javax.swing.JButton" binding="BackButton" custom-create="true">
             <constraints>
               <grid row="17" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="340" height="44"/>
