@@ -1,144 +1,414 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="ui.TrainerDashboard">
-  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="10">
-    <margin top="20" left="25" bottom="20" right="25"/>
+  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+    <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="500" height="428"/>
+      <xy x="20" y="20" width="1180" height="880"/>
     </constraints>
     <properties>
       <background color="-16118249"/>
     </properties>
     <border type="none"/>
     <children>
-      <component id="d335c" class="javax.swing.JLabel" binding="DashboardTitle">
+      <scrollpane id="t1001" binding="dashboardScrollPane">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <font size="16" style="1"/>
-          <foreground color="-1"/>
-          <text value="Trainer Dashboard"/>
+          <background color="-16118249"/>
         </properties>
-      </component>
-      <component id="3d6c4" class="javax.swing.JLabel" binding="Subtitle">
-        <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <font size="12"/>
-          <foreground color="-7037256"/>
-          <text value="Label"/>
-        </properties>
-      </component>
-      <tabbedpane id="1a7a" binding="tabbedPane1" default-binding="true">
-        <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="600" height="300"/>
-          </grid>
-        </constraints>
-        <properties/>
         <border type="none"/>
         <children>
-          <grid id="3e49" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="10" vgap="10">
-            <margin top="12" left="12" bottom="12" right="12"/>
-            <constraints>
-              <tabbedpane title="My Session"/>
-            </constraints>
+          <grid id="t1002" binding="scrollContentPanel" custom-create="true" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints/>
             <properties>
-              <background color="-15854299"/>
+              <background color="-16118249"/>
             </properties>
             <border type="none"/>
             <children>
-              <scrollpane id="4c6a7">
+              <grid id="t2001" binding="heroPanel" custom-create="true" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="16" vgap="8">
+                <margin top="24" left="36" bottom="64" right="36"/>
                 <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                    <minimum-size width="400" height="440"/>
+                    <preferred-size width="-1" height="460"/>
+                  </grid>
                 </constraints>
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="1587" class="javax.swing.JTable" binding="Sessiontabel">
-                    <constraints/>
-                    <properties/>
+                  <component id="t2002" class="javax.swing.JLabel" binding="lblLogo" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <opaque value="false"/>
+                    </properties>
                   </component>
+                  <component id="7a002" class="javax.swing.JButton" binding="btnLogout" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="LOGOUT"/>
+                    </properties>
+                  </component>
+                  <vspacer id="t2003">
+                    <constraints>
+                      <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+                        <preferred-size width="-1" height="72"/>
+                      </grid>
+                    </constraints>
+                  </vspacer>
+                  <grid id="t2004" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="10">
+                    <margin top="0" left="4" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <opaque value="false"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <component id="t2005" class="javax.swing.JLabel" binding="lblHeroHeadline" custom-create="true">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                      </component>
+                      <component id="t2006" class="javax.swing.JLabel" binding="lblHeroSubheadline" custom-create="true">
+                        <constraints>
+                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                      </component>
+                    </children>
+                  </grid>
                 </children>
-              </scrollpane>
-              <component id="8fa73" class="javax.swing.JButton" binding="updateScheduleButton" default-binding="true">
+              </grid>
+              <grid id="t3001" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="18">
+                <margin top="6" left="44" bottom="32" right="44"/>
                 <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Update Schedule"/>
+                  <opaque value="false"/>
                 </properties>
-              </component>
-              <component id="15cad" class="javax.swing.JButton" binding="cancelSessionButton" default-binding="true">
-                <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="Cancel Session"/>
-                </properties>
-              </component>
-            </children>
-          </grid>
-          <grid id="bf8e2" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="10" vgap="10">
-            <margin top="12" left="12" bottom="12" right="12"/>
-            <constraints>
-              <tabbedpane title="Mark Attendance"/>
-            </constraints>
-            <properties>
-              <background color="-15854299"/>
-            </properties>
-            <border type="none"/>
-            <children>
-              <component id="76962" class="javax.swing.JComboBox" binding="cmSessionFilter">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties/>
-              </component>
-              <scrollpane id="66ceb">
-                <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="af847" class="javax.swing.JTable" binding="AttendanceTabel">
-                    <constraints/>
-                    <properties/>
+                  <component id="d335c" class="javax.swing.JLabel" binding="DashboardTitle">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <font name="Segoe UI" size="28" style="1"/>
+                      <foreground color="-1"/>
+                      <horizontalAlignment value="0"/>
+                      <opaque value="false"/>
+                      <text value="Trainer Portal - All Trainers"/>
+                    </properties>
                   </component>
+                  <grid id="t3002" binding="welcomeCardPanel" custom-create="true" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="8">
+                    <margin top="18" left="26" bottom="18" right="26"/>
+                    <constraints>
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="t3003" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <font name="Segoe UI" size="22" style="1"/>
+                          <foreground color="-1"/>
+                          <opaque value="false"/>
+                          <text value="&lt;html&gt;&lt;font color='#FFFFFF'&gt;WELCOME BACK, &lt;/font&gt;&lt;font color='#FFD21F'&gt;COACH&lt;/font&gt;&lt;/html&gt;"/>
+                        </properties>
+                      </component>
+                      <component id="t3004" class="javax.swing.JLabel" binding="lblWelcomeBody" custom-create="true">
+                        <constraints>
+                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                      </component>
+                    </children>
+                  </grid>
+                  <grid id="t3005" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="true" same-size-vertically="true" hgap="16" vgap="0">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <opaque value="false"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <grid id="t3006" binding="cardTrainerId" custom-create="true" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="6">
+                        <margin top="16" left="22" bottom="18" right="22"/>
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="t3007" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font name="Segoe UI" size="11" style="1"/>
+                              <foreground color="-7035976"/>
+                              <opaque value="false"/>
+                              <text value="TRAINER ID"/>
+                            </properties>
+                          </component>
+                          <component id="t3008" class="javax.swing.JLabel" binding="lblTrainerIdValue">
+                            <constraints>
+                              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font name="Segoe UI" size="19" style="1"/>
+                              <foreground color="-1"/>
+                              <opaque value="false"/>
+                              <text value="TR-000"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </grid>
+                      <grid id="t3009" binding="cardSpecialization" custom-create="true" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="6">
+                        <margin top="16" left="22" bottom="18" right="22"/>
+                        <constraints>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="t3010" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font name="Segoe UI" size="11" style="1"/>
+                              <foreground color="-7035976"/>
+                              <opaque value="false"/>
+                              <text value="SPECIALIZATION"/>
+                            </properties>
+                          </component>
+                          <component id="t3011" class="javax.swing.JLabel" binding="lblSpecializationValue">
+                            <constraints>
+                              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font name="Segoe UI" size="19" style="1"/>
+                              <foreground color="-1"/>
+                              <opaque value="false"/>
+                              <text value="General Fitness"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </grid>
+                      <grid id="t3012" binding="cardSchedule" custom-create="true" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="6">
+                        <margin top="16" left="22" bottom="18" right="22"/>
+                        <constraints>
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="t3013" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font name="Segoe UI" size="11" style="1"/>
+                              <foreground color="-7035976"/>
+                              <opaque value="false"/>
+                              <text value="SCHEDULE"/>
+                            </properties>
+                          </component>
+                          <component id="t3014" class="javax.swing.JLabel" binding="lblScheduleValue">
+                            <constraints>
+                              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font name="Segoe UI" size="19" style="1"/>
+                              <foreground color="-1"/>
+                              <opaque value="false"/>
+                              <text value="N/A"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </grid>
+                    </children>
+                  </grid>
+                  <tabbedpane id="1a7a" binding="tabbedPane1" default-binding="true">
+                    <constraints>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                        <minimum-size width="500" height="420"/>
+                        <preferred-size width="-1" height="460"/>
+                      </grid>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <grid id="3e49" binding="tabMySessions" custom-create="true" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="16">
+                        <margin top="20" left="22" bottom="20" right="22"/>
+                        <constraints>
+                          <tabbedpane title="My Sessions"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <scrollpane id="4c6a7" binding="sessionsScrollPane">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                                <minimum-size width="400" height="240"/>
+                                <preferred-size width="-1" height="295"/>
+                              </grid>
+                            </constraints>
+                            <properties/>
+                            <border type="none"/>
+                            <children>
+                              <component id="1587" class="javax.swing.JTable" binding="Sessiontabel">
+                                <constraints/>
+                                <properties/>
+                              </component>
+                            </children>
+                          </scrollpane>
+                          <grid id="t4001" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="12" vgap="0">
+                            <margin top="0" left="0" bottom="0" right="0"/>
+                            <constraints>
+                              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <opaque value="false"/>
+                            </properties>
+                            <border type="none"/>
+                            <children>
+                              <hspacer id="t4002">
+                                <constraints>
+                                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                              </hspacer>
+                              <component id="15cad" class="javax.swing.JButton" binding="cancelSessionButton" custom-create="true">
+                                <constraints>
+                                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <text value="CANCEL SESSION"/>
+                                </properties>
+                              </component>
+                              <component id="8fa73" class="javax.swing.JButton" binding="updateScheduleButton" custom-create="true">
+                                <constraints>
+                                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <text value="UPDATE SCHEDULE →"/>
+                                </properties>
+                              </component>
+                            </children>
+                          </grid>
+                        </children>
+                      </grid>
+                      <grid id="bf8e2" binding="tabMarkAttendance" custom-create="true" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="14">
+                        <margin top="20" left="22" bottom="20" right="22"/>
+                        <constraints>
+                          <tabbedpane title="Mark Attendance"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <grid id="t5001" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="14" vgap="0">
+                            <margin top="0" left="0" bottom="0" right="0"/>
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <opaque value="false"/>
+                            </properties>
+                            <border type="none"/>
+                            <children>
+                              <component id="t5002" class="javax.swing.JLabel">
+                                <constraints>
+                                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <font name="Segoe UI" size="13" style="1"/>
+                                  <foreground color="-1905936"/>
+                                  <opaque value="false"/>
+                                  <text value="Select Session:"/>
+                                </properties>
+                              </component>
+                              <component id="76962" class="javax.swing.JComboBox" binding="cmSessionFilter">
+                                <constraints>
+                                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties/>
+                              </component>
+                            </children>
+                          </grid>
+                          <scrollpane id="66ceb" binding="attendanceScrollPane">
+                            <constraints>
+                              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                                <minimum-size width="400" height="220"/>
+                                <preferred-size width="-1" height="260"/>
+                              </grid>
+                            </constraints>
+                            <properties/>
+                            <border type="none"/>
+                            <children>
+                              <component id="af847" class="javax.swing.JTable" binding="AttendanceTabel">
+                                <constraints/>
+                                <properties/>
+                              </component>
+                            </children>
+                          </scrollpane>
+                          <grid id="t5003" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="12" vgap="0">
+                            <margin top="0" left="0" bottom="0" right="0"/>
+                            <constraints>
+                              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <opaque value="false"/>
+                            </properties>
+                            <border type="none"/>
+                            <children>
+                              <hspacer id="t5004">
+                                <constraints>
+                                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                              </hspacer>
+                              <component id="98b3" class="javax.swing.JButton" binding="markAbsentButton" custom-create="true">
+                                <constraints>
+                                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <text value="MARK ABSENT"/>
+                                </properties>
+                              </component>
+                              <component id="cf1ea" class="javax.swing.JButton" binding="markPresentButton" custom-create="true">
+                                <constraints>
+                                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <text value="MARK PRESENT →"/>
+                                </properties>
+                              </component>
+                            </children>
+                          </grid>
+                        </children>
+                      </grid>
+                    </children>
+                  </tabbedpane>
                 </children>
-              </scrollpane>
-              <component id="cf1ea" class="javax.swing.JButton" binding="markPresentButton" default-binding="true">
-                <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="Mark Present"/>
-                </properties>
-              </component>
-              <component id="98b3" class="javax.swing.JButton" binding="markAbsentButton" default-binding="true">
-                <constraints>
-                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="Mark Absent"/>
-                </properties>
-              </component>
+              </grid>
             </children>
           </grid>
         </children>
-      </tabbedpane>
-      <component id="7a002" class="javax.swing.JButton" binding="btnLogout">
-        <constraints>
-          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
-            <preferred-size width="140" height="-1"/>
-          </grid>
-        </constraints>
-        <properties>
-          <text value="Logout"/>
-        </properties>
-      </component>
+      </scrollpane>
     </children>
   </grid>
 </form>
