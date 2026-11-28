@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import services.GymSystemManager;
 import exceptions.InvalidLoginException;
+import java.util.prefs.*;
 
 public class LoginForm extends JFrame {
     private JTextField textField1;
@@ -29,8 +30,11 @@ public class LoginForm extends JFrame {
     private final GymSystemManager manager =
             GymSystemManager.getInstance();
 
+    private Preferences preferences = Preferences.userNodeForPackage(LoginForm.class);
+
     public LoginForm() {
         setContentPane(LoginMenu);
+        loadRememberedCredentials();
         UITheme.configureWindow(this, "Hussle Fitness - Gym Membership System (Sign In)");
         getRootPane().setDefaultButton(loginButton);
 
@@ -48,6 +52,8 @@ public class LoginForm extends JFrame {
         passwordField1.addActionListener(e -> handleLogin());
 
         registerButton.addActionListener(e -> UITheme.switchFrame(this, new RegisterForm()));
+
+
     }
 
     private void createUIComponents() {
@@ -60,6 +66,19 @@ public class LoginForm extends JFrame {
         loginButton = new UITheme.GradientButton("LOG IN \u2192");
         dividerPanel = new UITheme.DividerWithLabel("or");
         registerButton = new UITheme.OutlineAccentButton("CREATE NEW ACCOUNT");
+    }
+
+    private void loadRememberedCredentials() {
+        String savedID = preferences.get("userID", "");
+        String savedPassword = preferences.get("password", "");
+        boolean rememberMe = preferences.getBoolean("rememberMe", false);
+
+        rememberMeCheckBox.setSelected(rememberMe);
+
+        if (rememberMe) {
+            textField1.setText(savedID);
+            passwordField1.setText(savedPassword);
+        }
     }
 
     private void handleLogin() {
@@ -88,6 +107,15 @@ public class LoginForm extends JFrame {
 
         try {
             User matchedUser = manager.authenticate(userID, password);
+            if (rememberMeCheckBox.isSelected()) {
+                preferences.put("userID", userID);
+                preferences.put("password", password);
+                preferences.putBoolean("rememberMe", true);
+            } else {
+                preferences.remove("userID");
+                preferences.remove("password");
+                preferences.putBoolean("rememberMe", false);
+            }
 
             if (matchedUser instanceof Member member) {
                 UITheme.switchFrame(this, new MemberDashboard(member));
@@ -103,5 +131,6 @@ public class LoginForm extends JFrame {
             }
             passwordField1.setText("");
         }
+
     }
 }
