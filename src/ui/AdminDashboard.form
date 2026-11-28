@@ -1,57 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="ui.AdminDashboard">
-  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="10">
-    <margin top="20" left="25" bottom="20" right="25"/>
+  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="14">
+    <margin top="22" left="36" bottom="22" right="36"/>
     <constraints>
-      <xy x="20" y="20" width="900" height="580"/>
+      <xy x="20" y="20" width="1180" height="720"/>
     </constraints>
     <properties>
       <background color="-16118249"/>
     </properties>
     <border type="none"/>
     <children>
-      <component id="a1001" class="javax.swing.JLabel" binding="lblTitle">
+      <grid id="a0001" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="16" vgap="0">
+        <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <font size="18" style="1"/>
-          <foreground color="-1"/>
-          <text value="Admin Control Panel"/>
+          <opaque value="false"/>
         </properties>
-      </component>
-      <component id="a1002" class="javax.swing.JLabel" binding="lblSubtitle">
+        <border type="none"/>
+        <children>
+          <component id="a0002" class="javax.swing.JLabel" binding="lblLogo" custom-create="true">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <opaque value="false"/>
+            </properties>
+          </component>
+          <component id="a1001" class="javax.swing.JLabel" binding="lblTitle">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font name="Segoe UI" size="28" style="1"/>
+              <foreground color="-1"/>
+              <horizontalAlignment value="0"/>
+              <opaque value="false"/>
+              <text value="Admin Control Panel - System Admin"/>
+            </properties>
+          </component>
+          <component id="a0003" class="javax.swing.JLabel" binding="lblLogoBalance">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <opaque value="false"/>
+              <text value=""/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="a1002" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="true" hgap="12" vgap="0">
+        <margin top="0" left="0" bottom="4" right="0"/>
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <font size="12"/>
-          <foreground color="-7037256"/>
-          <text value="System Overview"/>
+          <opaque value="false"/>
         </properties>
-      </component>
+        <border type="none"/>
+        <children>
+          <component id="a1005" class="javax.swing.JLabel" binding="pillMembers" custom-create="true">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="a1006" class="javax.swing.JLabel" binding="pillTrainers" custom-create="true">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="a1007" class="javax.swing.JLabel" binding="pillRevenue" custom-create="true">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+          </component>
+        </children>
+      </grid>
       <tabbedpane id="a1003" binding="tabbedPane">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="820" height="400"/>
+            <preferred-size width="820" height="440"/>
           </grid>
         </constraints>
         <properties/>
         <border type="none"/>
         <children>
-          <grid id="m1001" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="10" vgap="10">
-            <margin top="12" left="12" bottom="12" right="12"/>
+          <grid id="m1001" binding="tabMembers" custom-create="true" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="18">
+            <margin top="18" left="22" bottom="20" right="22"/>
             <constraints>
               <tabbedpane title="Manage Members"/>
             </constraints>
-            <properties>
-              <background color="-15854299"/>
-            </properties>
+            <properties/>
             <border type="none"/>
             <children>
-              <scrollpane id="m1002">
+              <scrollpane id="m1002" binding="membersScrollPane">
                 <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
@@ -62,45 +111,55 @@
                   </component>
                 </children>
               </scrollpane>
-              <component id="m1004" class="javax.swing.JButton" binding="btnRemoveMember">
+              <grid id="m1010" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="true" same-size-vertically="false" hgap="16" vgap="0">
+                <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Remove Member"/>
+                  <opaque value="false"/>
                 </properties>
-              </component>
-              <component id="m1005" class="javax.swing.JButton" binding="btnToggleStatus">
-                <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="Toggle Active/Inactive"/>
-                </properties>
-              </component>
-              <component id="m1006" class="javax.swing.JButton" binding="btnAddMember">
-                <constraints>
-                  <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="Add Member"/>
-                </properties>
-              </component>
+                <border type="none"/>
+                <children>
+                  <component id="m1004" class="javax.swing.JButton" binding="btnRemoveMember" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Remove Member"/>
+                    </properties>
+                  </component>
+                  <component id="m1005" class="javax.swing.JButton" binding="btnToggleStatus" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Toggle Active/Inactive"/>
+                    </properties>
+                  </component>
+                  <component id="m1006" class="javax.swing.JButton" binding="btnAddMember" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Add Member"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
             </children>
           </grid>
-          <grid id="t1001" layout-manager="GridLayoutManager" row-count="2" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="10" vgap="10">
-            <margin top="12" left="12" bottom="12" right="12"/>
+          <grid id="t1001" binding="tabTrainers" custom-create="true" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="18">
+            <margin top="18" left="22" bottom="20" right="22"/>
             <constraints>
               <tabbedpane title="Manage Trainers"/>
             </constraints>
-            <properties>
-              <background color="-15854299"/>
-            </properties>
+            <properties/>
             <border type="none"/>
             <children>
-              <scrollpane id="t1002">
+              <scrollpane id="t1002" binding="trainersScrollPane">
                 <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="4" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
@@ -111,53 +170,63 @@
                   </component>
                 </children>
               </scrollpane>
-              <component id="t1004" class="javax.swing.JButton" binding="btnRemoveTrainer">
+              <grid id="t1010" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="true" same-size-vertically="false" hgap="14" vgap="0">
+                <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Remove Trainer"/>
+                  <opaque value="false"/>
                 </properties>
-              </component>
-              <component id="t1005" class="javax.swing.JButton" binding="btnEditSchedule">
-                <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="Edit Schedule"/>
-                </properties>
-              </component>
-              <component id="t1006" class="javax.swing.JButton" binding="btnCreateSession">
-                <constraints>
-                  <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="Create Session"/>
-                </properties>
-              </component>
-              <component id="t1007" class="javax.swing.JButton" binding="btnAddTrainer">
-                <constraints>
-                  <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="Add Trainer"/>
-                </properties>
-              </component>
+                <border type="none"/>
+                <children>
+                  <component id="t1004" class="javax.swing.JButton" binding="btnRemoveTrainer" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Remove Trainer"/>
+                    </properties>
+                  </component>
+                  <component id="t1005" class="javax.swing.JButton" binding="btnEditSchedule" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Edit Schedule"/>
+                    </properties>
+                  </component>
+                  <component id="t1006" class="javax.swing.JButton" binding="btnCreateSession" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Create Session"/>
+                    </properties>
+                  </component>
+                  <component id="t1007" class="javax.swing.JButton" binding="btnAddTrainer" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Add Trainer"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
             </children>
           </grid>
-          <grid id="p1001" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="10" vgap="10">
-            <margin top="12" left="12" bottom="12" right="12"/>
+          <grid id="p1001" binding="tabPlans" custom-create="true" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="18">
+            <margin top="18" left="22" bottom="20" right="22"/>
             <constraints>
               <tabbedpane title="Membership Plans"/>
             </constraints>
-            <properties>
-              <background color="-15854299"/>
-            </properties>
+            <properties/>
             <border type="none"/>
             <children>
-              <scrollpane id="p1002">
+              <scrollpane id="p1002" binding="plansScrollPane">
                 <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
@@ -168,40 +237,50 @@
                   </component>
                 </children>
               </scrollpane>
-              <component id="p1004" class="javax.swing.JButton" binding="btnDeletePlan">
+              <grid id="p1010" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="true" same-size-vertically="false" hgap="16" vgap="0">
+                <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Delete Plan"/>
+                  <opaque value="false"/>
                 </properties>
-              </component>
-              <component id="p1005" class="javax.swing.JButton" binding="btnEditPrice">
-                <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="Edit Price"/>
-                </properties>
-              </component>
-              <component id="p1006" class="javax.swing.JButton" binding="btnAddPlan">
-                <constraints>
-                  <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="Add Plan"/>
-                </properties>
-              </component>
+                <border type="none"/>
+                <children>
+                  <component id="p1004" class="javax.swing.JButton" binding="btnDeletePlan" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Delete Plan"/>
+                    </properties>
+                  </component>
+                  <component id="p1005" class="javax.swing.JButton" binding="btnEditPrice" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Edit Price"/>
+                    </properties>
+                  </component>
+                  <component id="p1006" class="javax.swing.JButton" binding="btnAddPlan" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Add Plan"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
             </children>
           </grid>
-          <grid id="r1001" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="10" vgap="10">
-            <margin top="12" left="12" bottom="12" right="12"/>
+          <grid id="r1001" binding="tabPayments" custom-create="true" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="14">
+            <margin top="18" left="22" bottom="20" right="22"/>
             <constraints>
               <tabbedpane title="Payments &amp; Reports"/>
             </constraints>
-            <properties>
-              <background color="-15854299"/>
-            </properties>
+            <properties/>
             <border type="none"/>
             <children>
               <component id="r1002" class="javax.swing.JLabel" binding="lblReportSummary">
@@ -209,12 +288,13 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <font style="1"/>
+                  <font name="Segoe UI" size="15" style="1"/>
                   <foreground color="-11745"/>
+                  <opaque value="false"/>
                   <text value="Total Revenue: PHP 0.00"/>
                 </properties>
               </component>
-              <scrollpane id="r1003">
+              <scrollpane id="r1003" binding="paymentsScrollPane">
                 <constraints>
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -227,9 +307,9 @@
                   </component>
                 </children>
               </scrollpane>
-              <component id="r1005" class="javax.swing.JButton" binding="btnGenerateReport">
+              <component id="r1005" class="javax.swing.JButton" binding="btnGenerateReport" custom-create="true">
                 <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="Generate Summary Report"/>
@@ -239,11 +319,9 @@
           </grid>
         </children>
       </tabbedpane>
-      <component id="a1004" class="javax.swing.JButton" binding="btnLogout">
+      <component id="a1004" class="javax.swing.JButton" binding="btnLogout" custom-create="true">
         <constraints>
-          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
-            <preferred-size width="140" height="-1"/>
-          </grid>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Logout"/>

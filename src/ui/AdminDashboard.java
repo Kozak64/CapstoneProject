@@ -5,7 +5,6 @@ import models.*;
 import services.GymSystemManager;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.LocalDate;
@@ -16,21 +15,33 @@ import java.util.List;
 
 public class AdminDashboard extends JFrame {
     private static final DateTimeFormatter DATE_TIME_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final Color DANGER_GRADIENT_START = new Color(0xEF4444);
+    private static final Color DANGER_GRADIENT_END = new Color(0xDC2626);
+    private static final int PILL_ARC = 42;
 
     private final Admin currentAdmin;
     private final GymSystemManager manager = GymSystemManager.getInstance();
 
     private JPanel mainPanel;
+    private JLabel lblLogo;
     private JLabel lblTitle;
-    private JLabel lblSubtitle;
+    private JLabel lblLogoBalance;
+    private JLabel lblSubtitle = new JLabel();
+    private JLabel pillMembers;
+    private JLabel pillTrainers;
+    private JLabel pillRevenue;
     private JTabbedPane tabbedPane;
 
+    private JPanel tabMembers;
+    private JScrollPane membersScrollPane;
     private JTable tblMembers;
     private JButton btnRemoveMember;
     private JButton btnToggleStatus;
     private JButton btnAddMember;
     private DefaultTableModel membersModel;
 
+    private JPanel tabTrainers;
+    private JScrollPane trainersScrollPane;
     private JTable tblTrainers;
     private JButton btnRemoveTrainer;
     private JButton btnEditSchedule;
@@ -38,12 +49,16 @@ public class AdminDashboard extends JFrame {
     private JButton btnAddTrainer;
     private DefaultTableModel trainersModel;
 
+    private JPanel tabPlans;
+    private JScrollPane plansScrollPane;
     private JTable tblPlans;
     private JButton btnDeletePlan;
     private JButton btnEditPrice;
     private JButton btnAddPlan;
     private DefaultTableModel plansModel;
 
+    private JPanel tabPayments;
+    private JScrollPane paymentsScrollPane;
     private JLabel lblReportSummary;
     private JTable tblPayments;
     private JButton btnGenerateReport;
@@ -54,7 +69,7 @@ public class AdminDashboard extends JFrame {
         this.currentAdmin = admin;
 
         setContentPane(mainPanel);
-        UITheme.configureWindow(this, "Hussle Fitness - Admin Dashboard");
+        UITheme.configureAdaptiveFrame(this, "Hussle Fitness - Admin Dashboard");
 
         applyTheme();
         setupTables();
@@ -67,58 +82,102 @@ public class AdminDashboard extends JFrame {
         this(null);
     }
 
+    private void createUIComponents() {
+        lblLogo = UITheme.createHeaderLogoLabel(getClass(), UITheme.LOGO_HORIZONTAL_ASSET, 34);
+
+        pillMembers = new UITheme.StatPillLabel("Members: 0");
+        pillTrainers = new UITheme.StatPillLabel("Trainers: 0");
+        pillRevenue = new UITheme.StatPillLabel("Total Revenue: PHP 0.00");
+
+        tabMembers = new UITheme.DarkGlassCard();
+        tabTrainers = new UITheme.DarkGlassCard();
+        tabPlans = new UITheme.DarkGlassCard();
+        tabPayments = new UITheme.DarkGlassCard();
+
+        btnRemoveMember = createDangerPillButton("Remove Member");
+        btnToggleStatus = createSecondaryPillButton("Toggle Active/Inactive");
+        btnAddMember = createPrimaryPillButton("Add Member");
+
+        btnRemoveTrainer = createDangerPillButton("Remove Trainer");
+        btnEditSchedule = createSecondaryPillButton("Edit Schedule");
+        btnCreateSession = createSecondaryPillButton("Create Session");
+        btnAddTrainer = createPrimaryPillButton("Add Trainer");
+
+        btnDeletePlan = createDangerPillButton("Delete Plan");
+        btnEditPrice = createSecondaryPillButton("Edit Price");
+        btnAddPlan = createPrimaryPillButton("Add Plan");
+
+        btnGenerateReport = new UITheme.GradientButton(
+                "Generate Summary Report",
+                UITheme.ELECTRIC_BLUE,
+                UITheme.ELECTRIC_BLUE_DARK,
+                42,
+                230,
+                PILL_ARC
+        );
+        btnLogout = new UITheme.OutlineAccentButton(
+                "Logout",
+                UITheme.LOGOUT_BORDER,
+                UITheme.TEXT_WHITE,
+                40,
+                136,
+                1.1f,
+                40
+        );
+    }
+
+    private static JButton createPrimaryPillButton(String text) {
+        return new UITheme.GradientButton(
+                text,
+                UITheme.ELECTRIC_BLUE,
+                UITheme.ELECTRIC_BLUE_DARK,
+                42,
+                160,
+                PILL_ARC
+        );
+    }
+
+    private static JButton createDangerPillButton(String text) {
+        return new UITheme.GradientButton(
+                text,
+                DANGER_GRADIENT_START,
+                DANGER_GRADIENT_END,
+                42,
+                160,
+                PILL_ARC
+        );
+    }
+
+    private static JButton createSecondaryPillButton(String text) {
+        return new UITheme.OutlineAccentButton(
+                text,
+                UITheme.LOGOUT_BORDER,
+                UITheme.TEXT_WHITE,
+                42,
+                160,
+                1.1f,
+                PILL_ARC
+        );
+    }
+
     private void applyTheme() {
         mainPanel.setBackground(UITheme.BG_NAVY);
-        mainPanel.setBorder(new EmptyBorder(18, 22, 18, 22));
 
-        lblTitle.setFont(UITheme.FONT_TITLE);
+        lblTitle.setFont(UITheme.FONT_PORTAL_TITLE);
         lblTitle.setForeground(UITheme.TEXT_WHITE);
 
-        lblSubtitle.setFont(UITheme.FONT_SUBTITLE);
-        lblSubtitle.setForeground(UITheme.TEXT_SLATE);
+        // Mirror top-left logo width on the right so lblTitle stays mathematically centered
+        if (lblLogo != null && lblLogoBalance != null) {
+            Dimension logoSize = lblLogo.getPreferredSize();
+            Dimension balanceSize = new Dimension(logoSize.width, 1);
+            lblLogoBalance.setPreferredSize(balanceSize);
+            lblLogoBalance.setMinimumSize(balanceSize);
+        }
 
-        lblReportSummary.setFont(UITheme.FONT_BOLD);
+        lblReportSummary.setFont(new Font("Segoe UI", Font.BOLD, 15));
         lblReportSummary.setForeground(UITheme.ACCENT_YELLOW);
 
         UITheme.styleDarkTabbedPane(tabbedPane);
-        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-            Component comp = tabbedPane.getComponentAt(i);
-            if (comp instanceof JComponent jc) {
-                jc.setBackground(UITheme.SURFACE_DARK);
-            }
-        }
-
-        styleDarkDanger(btnRemoveMember);
-        styleDarkSecondary(btnToggleStatus);
-        styleDarkPrimary(btnAddMember);
-
-        styleDarkDanger(btnRemoveTrainer);
-        styleDarkSecondary(btnEditSchedule);
-        styleDarkSecondary(btnCreateSession);
-        styleDarkPrimary(btnAddTrainer);
-
-        styleDarkDanger(btnDeletePlan);
-        styleDarkSecondary(btnEditPrice);
-        styleDarkPrimary(btnAddPlan);
-
-        styleDarkPrimary(btnGenerateReport);
-        styleDarkSecondary(btnLogout);
-    }
-
-    private void styleDarkPrimary(JButton btn) {
-        UITheme.styleButton(btn, UITheme.ELECTRIC_BLUE, UITheme.TEXT_WHITE, false);
-    }
-
-    private void styleDarkSecondary(JButton btn) {
-        UITheme.styleButton(btn, UITheme.SURFACE_ALT, UITheme.TEXT_LIGHT, true);
-        btn.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(UITheme.LOGOUT_BORDER, 1),
-                new EmptyBorder(6, 14, 6, 14)
-        ));
-    }
-
-    private void styleDarkDanger(JButton btn) {
-        UITheme.styleButton(btn, UITheme.STATUS_RED, UITheme.TEXT_WHITE, false);
     }
 
     private DefaultTableModel readOnlyModel(Object[] columns) {
@@ -133,19 +192,29 @@ public class AdminDashboard extends JFrame {
     private void setupTables() {
         membersModel = readOnlyModel(new Object[]{"User ID", "Name", "Email", "Plan", "Expiry Date", "Status"});
         tblMembers.setModel(membersModel);
-        UITheme.styleDarkTable(tblMembers, (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, tblMembers), 5);
+        styleAdminTable(tblMembers, membersScrollPane, 5);
 
         trainersModel = readOnlyModel(new Object[]{"User ID", "Trainer ID", "Name", "Specialization", "Schedule"});
         tblTrainers.setModel(trainersModel);
-        UITheme.styleDarkTable(tblTrainers, (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, tblTrainers), -1);
+        styleAdminTable(tblTrainers, trainersScrollPane, -1);
 
         plansModel = readOnlyModel(new Object[]{"Plan ID", "Plan Name", "Price (PHP)", "Duration (Months)", "Description"});
         tblPlans.setModel(plansModel);
-        UITheme.styleDarkTable(tblPlans, (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, tblPlans), -1);
+        styleAdminTable(tblPlans, plansScrollPane, -1);
 
         paymentsModel = readOnlyModel(new Object[]{"Payment ID", "Member", "Plan", "Amount (PHP)", "Method", "Date", "Status"});
         tblPayments.setModel(paymentsModel);
-        UITheme.styleDarkTable(tblPayments, (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, tblPayments), 6);
+        styleAdminTable(tblPayments, paymentsScrollPane, 6);
+    }
+
+    private static void styleAdminTable(JTable table, JScrollPane scrollPane, int statusColumnIndex) {
+        UITheme.styleDarkTable(table, scrollPane, statusColumnIndex);
+        if (scrollPane != null) {
+            // Let the outer DarkGlassCard provide the rounded border; keep a clean bottom hairline above buttons
+            scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UITheme.DIVIDER_COLOR));
+            scrollPane.setOpaque(false);
+            scrollPane.getViewport().setBackground(UITheme.SURFACE_DARK);
+        }
     }
 
     private void setupListeners() {
@@ -238,8 +307,15 @@ public class AdminDashboard extends JFrame {
         double total = manager.getTotalCompletedRevenue();
         String totalFmt = String.format("PHP %,.2f", total);
 
-        lblSubtitle.setText("Members: " + manager.getMembers().size()
-                + "   |   Trainers: " + manager.getTrainers().size()
+        int memberCount = manager.getMembers().size();
+        int trainerCount = manager.getTrainers().size();
+
+        pillMembers.setText("Members: " + memberCount);
+        pillTrainers.setText("Trainers: " + trainerCount);
+        pillRevenue.setText("Total Revenue: " + totalFmt);
+
+        lblSubtitle.setText("Members: " + memberCount
+                + "   |   Trainers: " + trainerCount
                 + "   |   Total Revenue: " + totalFmt);
         lblReportSummary.setText("Total Completed Revenue: " + totalFmt
                 + "   (" + manager.getPayments().size() + " transactions)");

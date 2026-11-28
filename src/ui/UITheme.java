@@ -34,6 +34,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
+import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -1759,6 +1760,53 @@ public final class UITheme {
     }
 
     /**
+     * Compact frosted dark rounded pill label (used for dashboard summary stats such as
+     * "Members: 5", "Trainers: 2", and "Total Revenue: PHP 4,800.00").
+     */
+    public static class StatPillLabel extends JLabel {
+        private final int arc;
+
+        public StatPillLabel(String text) {
+            this(text, 22);
+        }
+
+        public StatPillLabel(String text, int arc) {
+            super(text, SwingConstants.CENTER);
+            this.arc = arc;
+            setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            setForeground(TEXT_LIGHT);
+            setOpaque(false);
+            setBorder(new EmptyBorder(7, 18, 7, 18));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            int w = getWidth();
+            int h = getHeight();
+            if (w > 2 && h > 2) {
+                RoundRectangle2D pill = new RoundRectangle2D.Double(1, 1, w - 2, h - 2, arc, arc);
+                g2.setColor(SURFACE_ALT);
+                g2.fill(pill);
+
+                g2.setPaint(new GradientPaint(
+                        0, 1, new Color(255, 255, 255, 16),
+                        0, h * 0.6f, new Color(255, 255, 255, 0)
+                ));
+                g2.fill(pill);
+
+                g2.setStroke(new BasicStroke(1.0f));
+                g2.setColor(new Color(0x334155));
+                g2.draw(new RoundRectangle2D.Double(0.75, 0.75, w - 1.5, h - 1.5, arc, arc));
+            }
+            g2.dispose();
+            super.paintComponent(g);
+        }
+    }
+
+    /**
      * Subtle dark rounded inset panel (#131C2E, 12px corners, 1px #26334D border)
      * for highlighted summary blocks such as "Amount Due".
      */
@@ -2686,33 +2734,39 @@ public final class UITheme {
      * Primary gradient action button (#0A84FF to #0066CC) with 10px rounded corners.
      */
     public static class GradientButton extends JButton {
-        private static final int ARC = 20;
+        private static final int DEFAULT_ARC = 20;
 
         private final Color startColor;
         private final Color endColor;
         private final int buttonHeight;
         private final int minButtonWidth;
+        private final int arc;
         private boolean hovered = false;
         private boolean pressed = false;
 
         public GradientButton(String text) {
-            this(text, ELECTRIC_BLUE, ELECTRIC_BLUE_DARK, 44, 240);
+            this(text, ELECTRIC_BLUE, ELECTRIC_BLUE_DARK, 44, 240, DEFAULT_ARC);
         }
 
         public GradientButton(String text, int height, int minWidth) {
-            this(text, ELECTRIC_BLUE, ELECTRIC_BLUE_DARK, height, minWidth);
+            this(text, ELECTRIC_BLUE, ELECTRIC_BLUE_DARK, height, minWidth, DEFAULT_ARC);
         }
 
         public GradientButton(String text, Color startColor, Color endColor) {
-            this(text, startColor, endColor, 44, 240);
+            this(text, startColor, endColor, 44, 240, DEFAULT_ARC);
         }
 
         public GradientButton(String text, Color startColor, Color endColor, int height, int minWidth) {
+            this(text, startColor, endColor, height, minWidth, DEFAULT_ARC);
+        }
+
+        public GradientButton(String text, Color startColor, Color endColor, int height, int minWidth, int arc) {
             super(text);
             this.startColor = startColor;
             this.endColor = endColor;
             this.buttonHeight = height;
             this.minButtonWidth = minWidth;
+            this.arc = arc;
 
             setFont(FONT_BUTTON_ACTION);
             setForeground(TEXT_WHITE);
@@ -2786,7 +2840,8 @@ public final class UITheme {
                 c2 = adjustBrightness(endColor, 20);
             }
 
-            RoundRectangle2D shape = new RoundRectangle2D.Double(0, 0, w, h, ARC, ARC);
+            int effectiveArc = Math.min(arc, h);
+            RoundRectangle2D shape = new RoundRectangle2D.Double(0, 0, w, h, effectiveArc, effectiveArc);
             g2.setPaint(new GradientPaint(0, 0, c1, w, 0, c2));
             g2.fill(shape);
 
@@ -2998,9 +3053,7 @@ public final class UITheme {
         return new Color(r, g, b, c.getAlpha());
     }
 
-    // -------------------------------------------------------------------------
-    // Vector Icons (User, Mail, Lock, CheckBox, Eye)
-    // -------------------------------------------------------------------------
+
 
     public static final class UserIcon implements Icon {
         private final Color color;
@@ -3145,10 +3198,6 @@ public final class UITheme {
             g2.dispose();
         }
     }
-
-    // -------------------------------------------------------------------------
-    // Password Peek & Eye Toggle Internals
-    // -------------------------------------------------------------------------
 
     private static final class PasswordPeekState {
         int peekIndex = -1;
@@ -3308,39 +3357,54 @@ public final class UITheme {
     }
 
     private static final class EyeIcon implements Icon {
-        private final boolean slashed;
+        private final boolean revealed;
         private final Color color;
 
-        EyeIcon(boolean slashed, Color color) {
-            this.slashed = slashed;
+        EyeIcon(boolean revealed, Color color) {
+            this.revealed = revealed;
             this.color = color;
         }
 
         @Override
         public int getIconWidth() {
-            return 18;
+            return 20;
         }
 
         @Override
         public int getIconHeight() {
-            return 18;
+            return 20;
         }
 
         @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
             g2.setColor(color);
-            g2.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2.setStroke(new BasicStroke(2.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
-            float cx = x + 9f;
-            float cy = y + 9f;
-            g2.draw(new QuadCurve2D.Float(x + 1.5f, cy, cx, y + 2.5f, x + 16.5f, cy));
-            g2.draw(new QuadCurve2D.Float(x + 1.5f, cy, cx, y + 15.5f, x + 16.5f, cy));
-            g2.draw(new Ellipse2D.Float(cx - 2.5f, cy - 2.5f, 5f, 5f));
+            if (revealed) {
+                // Open eye: bold rounded upper eyelid arch + solid pupil with upper-right catchlight cutout
+                g2.draw(new QuadCurve2D.Double(x + 2.4, y + 10.6, x + 10.0, y + 2.4, x + 17.6, y + 10.6));
 
-            if (slashed) {
-                g2.draw(new Line2D.Double(x + 2.5, y + 15.5, x + 15.5, y + 2.5));
+                double pupilR = 3.45;
+                double px = x + 10.0;
+                double py = y + 12.0;
+                Area pupil = new Area(new Ellipse2D.Double(px - pupilR, py - pupilR, pupilR * 2.0, pupilR * 2.0));
+                double glintR = 0.95;
+                pupil.subtract(new Area(new Ellipse2D.Double(
+                        px + 1.35 - glintR,
+                        py - 1.35 - glintR,
+                        glintR * 2.0,
+                        glintR * 2.0
+                )));
+                g2.fill(pupil);
+            } else {
+                // Closed eye: bold rounded downward eyelid curve + 3 outward rounded lashes
+                g2.draw(new QuadCurve2D.Double(x + 2.4, y + 6.6, x + 10.0, y + 14.4, x + 17.6, y + 6.6));
+                g2.draw(new Line2D.Double(x + 10.0, y + 10.7, x + 10.0, y + 13.9));
+                g2.draw(new Line2D.Double(x + 5.7, y + 9.5, x + 4.2, y + 12.2));
+                g2.draw(new Line2D.Double(x + 14.3, y + 9.5, x + 15.8, y + 12.2));
             }
             g2.dispose();
         }
